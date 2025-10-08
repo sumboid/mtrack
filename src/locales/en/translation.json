@@ -79,7 +79,10 @@
     "edit": "Edit",
     "delete": "Delete",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "saveAndAddNext": "Save and Add Next",
+    "addRow": "Add Row",
+    "actions": "Actions"
   },
   "addRecord": {
     "title": "Add Medical Record",
@@ -143,5 +146,20 @@
     "imaging": "Imaging",
     "consultation": "Consultation",
     "other": "Other"
+  },
+  "medicalHistory": {
+    "category": "Category",
+    "date": "Date",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "treatment": "Treatment",
+    "notes": "Notes",
+    "editableTableInfo": "Quick data entry: Edit inline, add/remove rows. Category-specific fields show/hide automatically."
+  },
+  "validation": {
+    "required": "Required",
+    "invalidCategory": "Invalid category",
+    "requiredForContinuous": "Required for continuous events",
+    "endDateBeforeStart": "End date must be after start date"
   }
 }

@@ -17,7 +17,7 @@ interface AddMedicalRecordDialogProps {
   onClose: () => void;
   patientId: string;
   patientName: string;
-  onSubmit: (data: CreatePointRecordParams | CreateContinuousRecordParams) => void;
+  onSubmit: (data: CreatePointRecordParams | CreateContinuousRecordParams, keepDialogOpen?: boolean) => void;
 }
 
 interface EditMedicalRecordDialogProps {
@@ -63,6 +63,7 @@ export const AddMedicalRecordDialog: React.FC<AddMedicalRecordDialogProps> = ({
           onSubmit={onSubmit}
           onCancel={onClose}
           compact
+          saveAndAddNext
         />
       </DialogContent>
     </Dialog>

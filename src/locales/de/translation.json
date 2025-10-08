@@ -79,7 +79,10 @@
     "edit": "Bearbeiten",
     "delete": "Löschen",
     "cancel": "Abbrechen",
-    "save": "Speichern"
+    "save": "Speichern",
+    "saveAndAddNext": "Speichern und Weiter",
+    "addRow": "Zeile hinzufügen",
+    "actions": "Aktionen"
   },
   "addRecord": {
     "title": "Medizinischen Eintrag hinzufügen",
@@ -143,5 +146,20 @@
       "errorInvalid": "Ungültiges Backup-Format",
       "errorFailed": "Zusammenführen fehlgeschlagen"
     }
+  },
+  "medicalHistory": {
+    "category": "Kategorie",
+    "date": "Datum",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "treatment": "Behandlung",
+    "notes": "Notizen",
+    "editableTableInfo": "Schnelleingabe: Inline bearbeiten, Zeilen hinzufügen/entfernen. Kategoriespezifische Felder werden automatisch ein-/ausgeblendet."
+  },
+  "validation": {
+    "required": "Erforderlich",
+    "invalidCategory": "Ungültige Kategorie",
+    "requiredForContinuous": "Erforderlich für kontinuierliche Ereignisse",
+    "endDateBeforeStart": "Enddatum muss nach dem Startdatum liegen"
   }
 }

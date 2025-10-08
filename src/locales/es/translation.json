@@ -79,7 +79,10 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "cancel": "Cancelar",
-    "save": "Guardar"
+    "save": "Guardar",
+    "saveAndAddNext": "Guardar y Agregar Siguiente",
+    "addRow": "Agregar fila",
+    "actions": "Acciones"
   },
   "addRecord": {
     "title": "Agregar Registro Médico",
@@ -143,5 +146,20 @@
       "errorInvalid": "Formato de copia inválido",
       "errorFailed": "Error al combinar"
     }
+  },
+  "medicalHistory": {
+    "category": "Categoría",
+    "date": "Fecha",
+    "startDate": "Fecha de Inicio",
+    "endDate": "Fecha de Fin",
+    "treatment": "Tratamiento",
+    "notes": "Notas",
+    "editableTableInfo": "Entrada rápida: Edite en línea, agregue/elimine filas. Los campos específicos de categoría se muestran/ocultan automáticamente."
+  },
+  "validation": {
+    "required": "Requerido",
+    "invalidCategory": "Categoría inválida",
+    "requiredForContinuous": "Requerido para eventos continuos",
+    "endDateBeforeStart": "La fecha de fin debe ser posterior a la fecha de inicio"
   }
 }

@@ -96,13 +96,16 @@ const PatientDetailsPage: React.FC = () => {
     return state.context.patients.find(p => p.id === patientId);
   }, [state.context.patients, patientId]);
 
-  const handleAddRecord = (data: CreatePointRecordParams | CreateContinuousRecordParams) => {
+  const handleAddRecord = (data: CreatePointRecordParams | CreateContinuousRecordParams, keepDialogOpen?: boolean) => {
     if ('startDate' in data && 'endDate' in data) {
       historySend({ type: 'ADD_CONTINUOUS_RECORD', params: data as CreateContinuousRecordParams });
     } else {
       historySend({ type: 'ADD_POINT_RECORD', params: data as CreatePointRecordParams });
     }
-    setAddDialogOpen(false);
+    // Only close dialog if not in "Save and Add Next" mode
+    if (!keepDialogOpen) {
+      setAddDialogOpen(false);
+    }
   };
 
   const handleUpdateRecord = (record: MedicalHistoryRecord) => {

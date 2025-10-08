@@ -54,9 +54,10 @@ interface MedicalRecordFormProps {
   patientId: string;
   patientName: string;
   record?: MedicalHistoryRecord;
-  onSubmit: (data: CreatePointRecordParams | CreateContinuousRecordParams | MedicalHistoryRecord) => void;
+  onSubmit: (data: CreatePointRecordParams | CreateContinuousRecordParams | MedicalHistoryRecord, keepDialogOpen?: boolean) => void;
   onCancel: () => void;
   compact?: boolean; // When true, removes Card wrapper and titles for use in dialogs
+  saveAndAddNext?: boolean; // When true, keeps form open and resets after save (add mode only)
 }
 
 export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
@@ -67,6 +68,7 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
   onSubmit,
   onCancel,
   compact = false,
+  saveAndAddNext = false,
 }) => {
   const { t } = useTranslation();
 
@@ -159,7 +161,7 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
           : undefined,
         updatedAt: new Date(),
       };
-      onSubmit(updatedRecord);
+      onSubmit(updatedRecord, false);
     } else {
       const recordData = isContinuous ? {
         patientId,
@@ -176,9 +178,21 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
         treatment: treatment || undefined,
         notes: notes || undefined,
       };
-      onSubmit(recordData);
+      
+      // Pass keepDialogOpen=true when saveAndAddNext is enabled
+      onSubmit(recordData, saveAndAddNext);
+      
+      // Reset form for "Save and Add Next" mode
+      if (saveAndAddNext) {
+        setDate(dayjs());
+        setStartDate(dayjs());
+        setEndDate(null);
+        setTreatment('');
+        setNotes('');
+        setIsOngoing(true);
+      }
     }
-  }, [mode, record, category, isContinuous, startDate, date, treatment, notes, isOngoing, endDate, onSubmit, patientId]);
+  }, [mode, record, category, isContinuous, startDate, date, treatment, notes, isOngoing, endDate, onSubmit, patientId, saveAndAddNext]);
 
   const formContent = (
     <Box component="form" onSubmit={handleSubmit} sx={compact ? undefined : formBoxSx}>
@@ -297,7 +311,9 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
                     variant="contained"
                     startIcon={<SaveIcon />}
                   >
-                    {t('common.save')}
+                    {mode === 'add' && saveAndAddNext 
+                      ? t('common.saveAndAddNext') 
+                      : t('common.save')}
                   </Button>
                 </Box>
               </Grid>
