@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { PatientForm } from './patient.form.component';
 import type { Patient, PatientData } from '../models/patient.model';
 
@@ -29,9 +30,10 @@ export const AddPatientDialog: React.FC<AddPatientDialogProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} fullScreen={isMobile} maxWidth="md" fullWidth>
       <DialogTitle>
         {t('patients.addNew')}
         <IconButton
@@ -65,6 +67,7 @@ export const EditPatientDialog: React.FC<EditPatientDialogProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const handleSubmit = React.useCallback((data: PatientData) => {
     // Merge the data with the existing patient to preserve id and timestamps
@@ -75,7 +78,7 @@ export const EditPatientDialog: React.FC<EditPatientDialogProps> = ({
   }, [patient, onSubmit]);
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} fullScreen={isMobile} maxWidth="md" fullWidth>
       <DialogTitle>
         {t('patientDetails.editPatient')}
         <IconButton

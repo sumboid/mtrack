@@ -124,5 +124,24 @@
     "imaging": "Bildgebung",
     "consultation": "Beratung",
     "other": "Sonstiges"
+  },
+  "backup": {
+    "title": "Datensicherung",
+    "export": {
+      "title": "Backup exportieren",
+      "description": "Alle Ihre Daten als JSON-Datei herunterladen",
+      "button": "Exportieren",
+      "success": "Backup erfolgreich heruntergeladen!",
+      "errorFailed": "Fehler beim Erstellen des Backups"
+    },
+    "import": {
+      "title": "Backup zusammenführen",
+      "description": "Daten aus Backup-Datei in aktuelle Daten zusammenführen",
+      "button": "Zusammenführen",
+      "success": "Daten erfolgreich zusammengeführt!",
+      "errorRead": "Fehler beim Lesen der Backup-Datei",
+      "errorInvalid": "Ungültiges Backup-Format",
+      "errorFailed": "Zusammenführen fehlgeschlagen"
+    }
   }
 }

@@ -31,7 +31,9 @@ import type { Patient, PatientData } from '../models/patient.model';
 import { createPatient } from '../models/patient.model';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { AddPatientDialog } from '../components/patient.dialog.component';
+import { PatientsCardList } from '../components/patients.card.list.component';
 
 const containerSx = { mt: 4, mb: 4 } as const;
 const headerBoxSx = {
@@ -69,6 +71,7 @@ const PatientsListPage: React.FC = () => {
   const [state, send] = useActor(patientMachine);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [addDialogOpen, setAddDialogOpen] = React.useState(false);
 
   const handlePatientClick = React.useCallback(
@@ -133,7 +136,7 @@ const PatientsListPage: React.FC = () => {
     return dateObj.toLocaleDateString();
   }, []);
 
-  if (state.matches('loading') || state.matches('searching')) {
+  if (state.matches('loading')) {
     return (
       <Container maxWidth="lg" sx={containerSx}>
         <Typography variant="h4" component="h1" gutterBottom>
@@ -189,72 +192,80 @@ const PatientsListPage: React.FC = () => {
         />
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table sx={tableSx} aria-label="patients table">
-          <TableHead>
-            <TableRow>
-              <TableCell>{t('patients.table.name')}</TableCell>
-              <TableCell>{t('patients.table.email')}</TableCell>
-              <TableCell>{t('patients.table.phone')}</TableCell>
-              <TableCell>{t('patients.table.dateOfBirth')}</TableCell>
-              <TableCell align="center">{t('patients.table.actions')}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {state.context.patients.map((patient: Patient) => (
-              <TableRow
-                key={patient.id}
-                hover
-                sx={tableRowSx}
-                data-patient-id={patient.id}
-                onClick={handlePatientRowClick}
-              >
-                <TableCell 
-                  component="th" 
-                  scope="row"
-                >
-                  <Box sx={cellContentBoxSx}>
-                    <PersonIcon sx={personIconSx} />
-                    <Typography variant="body1" fontWeight="medium">
-                      {patient.name}
-                    </Typography>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={cellContentBoxSx}>
-                    <EmailIcon sx={contactIconSx} />
-                    {patient.email}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={cellContentBoxSx}>
-                    <PhoneIcon sx={contactIconSx} />
-                    {patient.phone}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Box sx={cellContentBoxSx}>
-                    <CalendarIcon sx={contactIconSx} />
-                    {formatDate(patient.dateOfBirth)}
-                  </Box>
-                </TableCell>
-                <TableCell align="center">
-                  <Tooltip title={t('patients.table.viewDetails')}>
-                    <IconButton 
-                      color="primary" 
-                      onClick={handleViewDetailsClick}
-                      size="small"
-                      data-patient-id={patient.id}
-                    >
-                      <VisibilityIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
+      {isMobile ? (
+        <PatientsCardList
+          patients={state.context.patients}
+          onPatientClick={handlePatientClick}
+          formatDate={formatDate}
+        />
+      ) : (
+        <TableContainer component={Paper}>
+          <Table sx={tableSx} aria-label="patients table">
+            <TableHead>
+              <TableRow>
+                <TableCell>{t('patients.table.name')}</TableCell>
+                <TableCell>{t('patients.table.email')}</TableCell>
+                <TableCell>{t('patients.table.phone')}</TableCell>
+                <TableCell>{t('patients.table.dateOfBirth')}</TableCell>
+                <TableCell align="center">{t('patients.table.actions')}</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {state.context.patients.map((patient: Patient) => (
+                <TableRow
+                  key={patient.id}
+                  hover
+                  sx={tableRowSx}
+                  data-patient-id={patient.id}
+                  onClick={handlePatientRowClick}
+                >
+                  <TableCell 
+                    component="th" 
+                    scope="row"
+                  >
+                    <Box sx={cellContentBoxSx}>
+                      <PersonIcon sx={personIconSx} />
+                      <Typography variant="body1" fontWeight="medium">
+                        {patient.name}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={cellContentBoxSx}>
+                      <EmailIcon sx={contactIconSx} />
+                      {patient.email}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={cellContentBoxSx}>
+                      <PhoneIcon sx={contactIconSx} />
+                      {patient.phone}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={cellContentBoxSx}>
+                      <CalendarIcon sx={contactIconSx} />
+                      {formatDate(patient.dateOfBirth)}
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Tooltip title={t('patients.table.viewDetails')}>
+                      <IconButton 
+                        color="primary" 
+                        onClick={handleViewDetailsClick}
+                        size="small"
+                        data-patient-id={patient.id}
+                      >
+                        <VisibilityIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {state.context.patients.length === 0 && !state.context.searchQuery && (
         <Box sx={emptyStateBoxSx}>

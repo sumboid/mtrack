@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { MedicalRecordForm } from './medical.record.form.component';
 import type { CreatePointRecordParams, CreateContinuousRecordParams } from '../fsm/medical.history.machine';
 import type { MedicalHistoryRecord } from '../models/medical.history.model';
@@ -36,9 +37,10 @@ export const AddMedicalRecordDialog: React.FC<AddMedicalRecordDialogProps> = ({
   onSubmit,
 }) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} fullScreen={isMobile} maxWidth="md" fullWidth>
       <DialogTitle>
         {t('patientDetails.addRecord')}
         <IconButton
@@ -76,9 +78,10 @@ export const EditMedicalRecordDialog: React.FC<EditMedicalRecordDialogProps> = (
   onSubmit,
 }) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} fullScreen={isMobile} maxWidth="md" fullWidth>
       <DialogTitle>
         {t('common.edit')} {t('patientDetails.medicalHistory')}
         <IconButton

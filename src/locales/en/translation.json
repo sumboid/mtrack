@@ -98,7 +98,26 @@
   },
   "editRecord": {
     "title": "Edit Medical Record",
-    "forPatient": "For patient"
+    "saveChanges": "Save Changes"
+  },
+  "backup": {
+    "title": "Data Backup",
+    "export": {
+      "title": "Export Backup",
+      "description": "Download all your data as JSON file",
+      "button": "Export",
+      "success": "Backup downloaded successfully!",
+      "errorFailed": "Failed to create backup"
+    },
+    "import": {
+      "title": "Merge Backup",
+      "description": "Merge data from backup file into current data",
+      "button": "Merge",
+      "success": "Data merged successfully!",
+      "errorRead": "Failed to read backup file",
+      "errorInvalid": "Invalid backup format",
+      "errorFailed": "Merge failed"
+    }
   },
   "app": {
     "editPatient": "Edit Patient - Coming Soon",

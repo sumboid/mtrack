@@ -124,5 +124,24 @@
     "imaging": "Imágenes",
     "consultation": "Consulta",
     "other": "Otro"
+  },
+  "backup": {
+    "title": "Copia de Seguridad",
+    "export": {
+      "title": "Exportar Copia",
+      "description": "Descargar todos tus datos como archivo JSON",
+      "button": "Exportar",
+      "success": "¡Copia de seguridad descargada exitosamente!",
+      "errorFailed": "Error al crear la copia de seguridad"
+    },
+    "import": {
+      "title": "Combinar Copia",
+      "description": "Combinar datos del archivo de copia con los datos actuales",
+      "button": "Combinar",
+      "success": "¡Datos combinados exitosamente!",
+      "errorRead": "Error al leer el archivo de copia",
+      "errorInvalid": "Formato de copia inválido",
+      "errorFailed": "Error al combinar"
+    }
   }
 }

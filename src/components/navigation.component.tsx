@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -13,10 +13,12 @@ import {
   MedicalServices as MedicalIcon,
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
+  Backup as BackupIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from './language.selector.component';
+import { BackupDialog } from './backup.dialog.component';
 
 interface NavigationProps {
   mode: 'light' | 'dark';
@@ -27,6 +29,7 @@ const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const [backupOpen, setBackupOpen] = useState(false);
 
   return (
     <AppBar 
@@ -81,6 +84,20 @@ const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
         </Box>
 
         <Box display="flex" alignItems="center" gap={2}>
+          <Tooltip title="Backup & Storage">
+            <IconButton 
+              color="inherit" 
+              onClick={() => setBackupOpen(true)}
+              sx={{
+                color: 'primary.main',
+                '&:hover': {
+                  backgroundColor: 'action.hover',
+                },
+              }}
+            >
+              <BackupIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title={mode === 'dark' ? t('navigation.lightMode') : t('navigation.darkMode')}>
             <IconButton 
               color="inherit" 
@@ -98,6 +115,7 @@ const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
           <LanguageSelector />
         </Box>
       </Toolbar>
+      <BackupDialog open={backupOpen} onClose={() => setBackupOpen(false)} />
     </AppBar>
   );
 };

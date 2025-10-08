@@ -7,6 +7,7 @@ import Navigation from './components/navigation.component';
 import PatientsListPage from './pages/patients.list.page';
 import PatientDetailsPage from './pages/patient.details.page';
 import EditPatientPage from './pages/edit.patient.page';
+import { PWAUpdateNotification } from './components/pwa.update.notification.component';
 
 function App() {
   const [mode, setMode] = useState<'light' | 'dark'>(() => {
@@ -27,6 +28,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <PWAUpdateNotification />
       <Router basename="/mtrack">
         <Box sx={{ 
           display: 'flex', 
