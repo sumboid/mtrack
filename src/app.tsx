@@ -27,7 +27,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <Router basename="/mtrack">
         <Box sx={{ 
           display: 'flex', 
           flexDirection: 'column',
