@@ -1,0 +1,128 @@
+{
+  "navigation": {
+    "title": "MediTrack",
+    "patients": "Patients",
+    "lightMode": "Switch to Light Mode",
+    "darkMode": "Switch to Dark Mode"
+  },
+  "patients": {
+    "title": "Patient Management",
+    "loading": "Loading Patients...",
+    "error": "Error Loading Patients",
+    "retry": "Retry",
+    "addNew": "Add New Patient",
+    "searchPlaceholder": "Search patients by name or email...",
+    "born": "Born",
+    "lastVisit": "Last visit",
+    "recordsCount": "{{count}} record",
+    "recordsCount_plural": "{{count}} records",
+    "noPatients": "No patients found",
+    "noSearchResults": "No patients match your search",
+    "tryDifferentSearch": "Try a different search term",
+    "addFirst": "Add Your First Patient",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "dateOfBirth": "Date of Birth",
+      "lastVisit": "Last Visit",
+      "records": "Records",
+      "actions": "Actions",
+      "viewDetails": "View Details",
+      "noVisit": "No visits"
+    }
+  },
+  "patientDetails": {
+    "loading": "Loading Patient Details...",
+    "backToPatients": "Back to Patients",
+    "backToDetails": "Back to Patient Details",
+    "notFound": "Patient Not Found",
+    "notFoundDescription": "The requested patient could not be found.",
+    "patientId": "Patient ID",
+    "yearsOld": "{{age}} years old",
+    "lastVisit": "Last visit",
+    "editPatient": "Edit Patient",
+    "medicalHistory": "Medical History",
+    "addRecord": "Add Record",
+    "noMedicalRecords": "No medical records found",
+    "addFirstRecord": "Add First Record",
+    "treatment": "Treatment",
+    "notes": "Notes",
+    "startDate": "Start",
+    "endDate": "End",
+    "ongoing": "Ongoing",
+    "timelineComingSoon": "Timeline view coming soon",
+    "timelineDescription": "Medical history will be displayed here"
+  },
+  "patient": {
+    "form": {
+      "addTitle": "Add New Patient",
+      "editTitle": "Edit Patient",
+      "addDescription": "Enter the patient's information below",
+      "editDescription": "Update the patient's information",
+      "name": "Full Name",
+      "nameRequired": "Name is required",
+      "email": "Email Address",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "phone": "Phone Number",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Phone number must be between 7 and 15 digits",
+      "dateOfBirth": "Date of Birth",
+      "diagnosis": "Diagnosis",
+      "notes": "Notes"
+    }
+  },
+  "common": {
+    "undo": "Undo",
+    "redo": "Redo",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "addRecord": {
+    "title": "Add Medical Record",
+    "forPatient": "For patient",
+    "category": "Category",
+    "date": "Date",
+    "timeRange": "Time Range",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "ongoing": "Ongoing Treatment",
+    "ongoingHelp": "No end date set",
+    "ongoingDescription": "Check this if the treatment is still active",
+    "diagnosis": "Diagnosis",
+    "treatment": "Treatment",
+    "notes": "Notes"
+  },
+  "editRecord": {
+    "title": "Edit Medical Record",
+    "forPatient": "For patient"
+  },
+  "app": {
+    "editPatient": "Edit Patient - Coming Soon",
+    "addMedicalRecord": "Add Medical Record - Coming Soon",
+    "comingSoon": "This feature will be implemented next."
+  },
+  "languageSelector": {
+    "label": "Language",
+    "english": "English",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "russian": "Русский"
+  },
+  "categories": {
+    "diagnosis": "Diagnosis",
+    "followUp": "Follow-up Visit",
+    "surgery": "Surgery",
+    "chemotherapy": "Chemotherapy",
+    "radiotherapy": "Radiotherapy",
+    "immunotherapy": "Immunotherapy",
+    "hospitalization": "Hospitalization",
+    "labTest": "Lab Test",
+    "imaging": "Imaging",
+    "consultation": "Consultation",
+    "other": "Other"
+  }
+}

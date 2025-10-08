@@ -1,0 +1,128 @@
+{
+  "navigation": {
+    "title": "MediTrack",
+    "patients": "Pacientes",
+    "lightMode": "Cambiar a Modo Claro",
+    "darkMode": "Cambiar a Modo Oscuro"
+  },
+  "patients": {
+    "title": "Gestión de Pacientes",
+    "loading": "Cargando Pacientes...",
+    "error": "Error Cargando Pacientes",
+    "retry": "Reintentar",
+    "addNew": "Agregar Nuevo Paciente",
+    "searchPlaceholder": "Buscar pacientes por nombre o email...",
+    "born": "Nacido",
+    "lastVisit": "Última visita",
+    "recordsCount": "{{count}} registro",
+    "recordsCount_plural": "{{count}} registros",
+    "noPatients": "No se encontraron pacientes",
+    "noSearchResults": "No hay pacientes que coincidan con tu búsqueda",
+    "tryDifferentSearch": "Prueba con otro término de búsqueda",
+    "addFirst": "Agrega Tu Primer Paciente",
+    "table": {
+      "name": "Nombre",
+      "email": "Correo electrónico",
+      "phone": "Teléfono",
+      "dateOfBirth": "Fecha de nacimiento",
+      "lastVisit": "Última visita",
+      "records": "Registros",
+      "actions": "Acciones",
+      "viewDetails": "Ver detalles",
+      "noVisit": "Sin visitas"
+    }
+  },
+  "patientDetails": {
+    "loading": "Cargando Detalles del Paciente...",
+    "backToPatients": "Volver a Pacientes",
+    "backToDetails": "Volver a Detalles del Paciente",
+    "notFound": "Paciente No Encontrado",
+    "notFoundDescription": "No se pudo encontrar el paciente solicitado.",
+    "patientId": "ID del Paciente",
+    "yearsOld": "{{age}} años",
+    "lastVisit": "Última visita",
+    "editPatient": "Editar Paciente",
+    "medicalHistory": "Historial Médico",
+    "addRecord": "Agregar Registro",
+    "noMedicalRecords": "No se encontraron registros médicos",
+    "addFirstRecord": "Agregar Primer Registro",
+    "treatment": "Tratamiento",
+    "notes": "Notas",
+    "startDate": "Inicio",
+    "endDate": "Fin",
+    "ongoing": "En curso",
+    "timelineComingSoon": "Vista de línea de tiempo próximamente",
+    "timelineDescription": "El historial médico se mostrará aquí"
+  },
+  "patient": {
+    "form": {
+      "addTitle": "Agregar Nuevo Paciente",
+      "editTitle": "Editar Paciente",
+      "addDescription": "Ingrese la información del paciente a continuación",
+      "editDescription": "Actualice la información del paciente",
+      "name": "Nombre completo",
+      "nameRequired": "El nombre es obligatorio",
+      "email": "Dirección de correo electrónico",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Dirección de correo electrónico no válida",
+      "phone": "Número de teléfono",
+      "phoneRequired": "El número de teléfono es obligatorio",
+      "phoneInvalid": "El número de teléfono debe tener entre 7 y 15 dígitos",
+      "dateOfBirth": "Fecha de nacimiento",
+      "diagnosis": "Diagnóstico",
+      "notes": "Notas"
+    }
+  },
+  "common": {
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "save": "Guardar"
+  },
+  "addRecord": {
+    "title": "Agregar Registro Médico",
+    "forPatient": "Para el paciente",
+    "category": "Categoría",
+    "date": "Fecha",
+    "timeRange": "Rango de Tiempo",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de fin",
+    "ongoing": "Tratamiento en curso",
+    "ongoingHelp": "Sin fecha de fin establecida",
+    "ongoingDescription": "Marque esto si el tratamiento aún está activo",
+    "diagnosis": "Diagnóstico",
+    "treatment": "Tratamiento",
+    "notes": "Notas"
+  },
+  "editRecord": {
+    "title": "Editar Registro Médico",
+    "forPatient": "Para el paciente"
+  },
+  "app": {
+    "editPatient": "Editar Paciente - Próximamente",
+    "addMedicalRecord": "Agregar Registro Médico - Próximamente",
+    "comingSoon": "Esta característica será implementada pronto."
+  },
+  "languageSelector": {
+    "label": "Idioma",
+    "english": "English",
+    "spanish": "Español",
+    "german": "Deutsch",
+    "russian": "Русский"
+  },
+  "categories": {
+    "diagnosis": "Diagnóstico",
+    "followUp": "Visita de seguimiento",
+    "surgery": "Cirugía",
+    "chemotherapy": "Quimioterapia",
+    "radiotherapy": "Radioterapia",
+    "immunotherapy": "Inmunoterapia",
+    "hospitalization": "Hospitalización",
+    "labTest": "Análisis de laboratorio",
+    "imaging": "Imágenes",
+    "consultation": "Consulta",
+    "other": "Otro"
+  }
+}
