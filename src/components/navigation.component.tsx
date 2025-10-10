@@ -3,19 +3,16 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
   Box,
   IconButton,
   Tooltip,
 } from '@mui/material';
 import {
-  Home as HomeIcon,
   MedicalServices as MedicalIcon,
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
   Backup as BackupIcon,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from './language.selector.component';
 import { BackupDialog } from './backup.dialog.component';
@@ -26,8 +23,6 @@ interface NavigationProps {
 }
 
 const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useTranslation();
   const [backupOpen, setBackupOpen] = useState(false);
 
@@ -53,34 +48,13 @@ const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
             variant="h6" 
             component="div" 
             sx={{ 
-              mr: 4,
               fontWeight: 700,
               color: 'text.primary',
+              display: { xs: 'none', sm: 'block' }, // Hide on mobile
             }}
           >
             {t('navigation.title')}
           </Typography>
-          
-          <Button
-            color="inherit"
-            startIcon={<HomeIcon />}
-            onClick={() => navigate('/')}
-            sx={{
-              backgroundColor: location.pathname === '/' 
-                ? 'action.selected'
-                : 'transparent',
-              color: location.pathname === '/' ? 'primary.main' : 'text.secondary',
-              '&:hover': {
-                backgroundColor: 'action.hover',
-                color: 'primary.main',
-              },
-              borderRadius: 2,
-              px: 2,
-              transition: 'all 0.2s ease',
-            }}
-          >
-            {t('navigation.patients')}
-          </Button>
         </Box>
 
         <Box display="flex" alignItems="center" gap={2}>

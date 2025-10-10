@@ -10,7 +10,7 @@
     "loading": "Loading Patients...",
     "error": "Error Loading Patients",
     "retry": "Retry",
-    "addNew": "Add New Patient",
+    "addNew": "Add Patient",
     "searchPlaceholder": "Search patients by name or email...",
     "born": "Born",
     "lastVisit": "Last visit",
@@ -95,7 +95,7 @@
   },
   "patient": {
     "form": {
-      "addTitle": "Add New Patient",
+      "addTitle": "Add Patient",
       "editTitle": "Edit Patient",
       "addDescription": "Enter the patient's information below",
       "editDescription": "Update the patient's information",

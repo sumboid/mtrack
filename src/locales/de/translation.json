@@ -10,7 +10,7 @@
     "loading": "Lade Patienten...",
     "error": "Fehler beim Laden der Patienten",
     "retry": "Wiederholen",
-    "addNew": "Neuen Patienten hinzufügen",
+    "addNew": "Patient hinzufügen",
     "searchPlaceholder": "Patienten nach Name oder E-Mail suchen...",
     "born": "Geboren",
     "lastVisit": "Letzter Besuch",
@@ -95,7 +95,7 @@
   },
   "patient": {
     "form": {
-      "addTitle": "Neuen Patienten hinzufügen",
+      "addTitle": "Patient hinzufügen",
       "editTitle": "Patient bearbeiten",
       "addDescription": "Geben Sie die Patienteninformationen unten ein",
       "editDescription": "Aktualisieren Sie die Patienteninformationen",
