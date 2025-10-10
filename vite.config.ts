@@ -13,8 +13,8 @@ export default defineConfig({
         name: 'MediTrack - Medical History Tracker',
         short_name: 'MediTrack',
         description: 'Track patient medical records and history offline',
-        theme_color: '#1976d2',
-        background_color: '#ffffff',
+        theme_color: '#7278F2', // Vibrant blue from palette
+        background_color: '#0A0F1A', // Dark background from palette
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',

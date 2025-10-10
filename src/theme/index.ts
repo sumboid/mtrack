@@ -12,53 +12,53 @@ declare module '@mui/material/styles' {
 
 const darkPalette = {
   primary: {
-    main: '#00e5ff',
-    light: '#6effff',
-    dark: '#00b2cc',
+    main: '#7278F2', // Vibrant blue from palette
+    light: '#9EA3F5',
+    dark: '#5159C9',
   },
   secondary: {
-    main: '#7c4dff',
-    light: '#b47cff',
-    dark: '#3f1dcb',
+    main: '#F2766B', // Coral/salmon accent
+    light: '#FF9C93',
+    dark: '#D9564C',
   },
   background: {
-    default: '#0a1929',
-    paper: '#132f4c',
+    default: '#0A0F1A', // Darker version of The-Games-We-Loved-2
+    paper: '#152030', // Slightly lighter, based on The-Games-We-Loved-2
   },
   text: {
-    primary: '#e3f2fd',
-    secondary: '#b0bec5',
+    primary: '#EFF2D8', // Cream from palette
+    secondary: '#B8C4D9', // Lighter version of The-Games-We-Loved-3
   },
-  divider: 'rgba(0, 229, 255, 0.08)',
+  divider: 'rgba(105, 158, 191, 0.12)', // Using The-Games-We-Loved-3
   action: {
-    hover: 'rgba(0, 229, 255, 0.08)',
-    selected: 'rgba(0, 229, 255, 0.12)',
+    hover: 'rgba(114, 120, 242, 0.08)', // Using primary color
+    selected: 'rgba(114, 120, 242, 0.16)',
   },
 };
 
 const lightPalette = {
   primary: {
-    main: '#0097a7',
-    light: '#4dd0e1',
-    dark: '#006064',
+    main: '#064973', // Deep blue from palette (The-Games-We-Loved-2)
+    light: '#699EBF', // Mid-tone blue (The-Games-We-Loved-3)
+    dark: '#033A5C',
   },
   secondary: {
-    main: '#6a1b9a',
-    light: '#9c27b0',
-    dark: '#4a148c',
+    main: '#F2766B', // Coral/salmon accent (same as dark mode)
+    light: '#FF9C93',
+    dark: '#D9564C',
   },
   background: {
-    default: '#eceff1',
-    paper: '#ffffff',
+    default: '#F5F6F0', // Light version of cream
+    paper: '#FFFFFF',
   },
   text: {
-    primary: '#263238',
-    secondary: '#546e7a',
+    primary: '#0A0F1A', // Dark blue-black for text
+    secondary: '#064973', // Deep blue for secondary text
   },
-  divider: 'rgba(0, 151, 167, 0.08)',
+  divider: 'rgba(105, 158, 191, 0.15)', // Using The-Games-We-Loved-3
   action: {
-    hover: 'rgba(0, 151, 167, 0.04)',
-    selected: 'rgba(0, 151, 167, 0.08)',
+    hover: 'rgba(6, 73, 115, 0.04)', // Using primary color
+    selected: 'rgba(6, 73, 115, 0.08)',
   },
 };
 
@@ -92,12 +92,12 @@ const getDarkComponents = () => ({
   MuiTableCell: {
     styleOverrides: {
       root: {
-        borderBottom: '1px solid rgba(0, 229, 255, 0.08)',
+        borderBottom: '1px solid rgba(105, 158, 191, 0.12)',
       },
       head: {
         fontWeight: 600,
-        backgroundColor: '#0d2136',
-        borderBottom: '2px solid rgba(0, 229, 255, 0.08)',
+        backgroundColor: '#0D1520',
+        borderBottom: '2px solid rgba(114, 120, 242, 0.2)',
       },
     },
   },
@@ -110,9 +110,9 @@ const getDarkComponents = () => ({
         transition: 'all 0.2s ease',
       },
       contained: {
-        boxShadow: '0 0 15px rgba(0, 229, 255, 0.3)',
+        boxShadow: '0 0 15px rgba(114, 120, 242, 0.25)',
         '&:hover': {
-          boxShadow: '0 0 20px rgba(0, 229, 255, 0.5)',
+          boxShadow: '0 0 20px rgba(114, 120, 242, 0.4)',
         },
       },
     },
@@ -131,8 +131,8 @@ const getDarkComponents = () => ({
     styleOverrides: {
       root: {
         backgroundImage: 'none',
-        backgroundColor: '#0a1929',
-        color: '#e3f2fd',
+        backgroundColor: '#0A0F1A',
+        color: '#EFF2D8',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)',
       },
     },
@@ -141,7 +141,7 @@ const getDarkComponents = () => ({
     styleOverrides: {
       root: {
         '&:hover': {
-          backgroundColor: 'rgba(0, 229, 255, 0.08)',
+          backgroundColor: 'rgba(114, 120, 242, 0.08)',
         },
       },
     },
@@ -169,12 +169,12 @@ const getLightComponents = () => ({
   MuiTableCell: {
     styleOverrides: {
       root: {
-        borderBottom: '1px solid rgba(0, 151, 167, 0.08)',
+        borderBottom: '1px solid rgba(105, 158, 191, 0.15)',
       },
       head: {
         fontWeight: 600,
-        backgroundColor: '#f5f5f5',
-        borderBottom: '2px solid rgba(0, 151, 167, 0.08)',
+        backgroundColor: '#F0F4F7',
+        borderBottom: '2px solid rgba(6, 73, 115, 0.2)',
       },
     },
   },
@@ -187,9 +187,9 @@ const getLightComponents = () => ({
         transition: 'all 0.2s ease',
       },
       contained: {
-        boxShadow: '0 2px 8px rgba(0, 151, 167, 0.25)',
+        boxShadow: '0 2px 8px rgba(6, 73, 115, 0.2)',
         '&:hover': {
-          boxShadow: '0 4px 12px rgba(0, 151, 167, 0.35)',
+          boxShadow: '0 4px 12px rgba(6, 73, 115, 0.3)',
         },
       },
     },
@@ -208,8 +208,8 @@ const getLightComponents = () => ({
     styleOverrides: {
       root: {
         backgroundImage: 'none',
-        backgroundColor: '#ffffff',
-        color: '#263238',
+        backgroundColor: '#FFFFFF',
+        color: '#0A0F1A',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
       },
     },
@@ -218,7 +218,7 @@ const getLightComponents = () => ({
     styleOverrides: {
       root: {
         '&:hover': {
-          backgroundColor: 'rgba(0, 151, 167, 0.04)',
+          backgroundColor: 'rgba(6, 73, 115, 0.04)',
         },
       },
     },
