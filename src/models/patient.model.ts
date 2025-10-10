@@ -1,14 +1,16 @@
 import { z } from 'zod';
 import { makeIDGen } from './id';
+import { DiagnosisSchema } from './diagnoses';
 
 export const generatePatientId = makeIDGen('PAT');
+
 
 export const PatientDataSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.email('Invalid email address'),
   phone: z.string().min(7, 'Phone number is too short').max(15, 'Phone number is too long'),
   dateOfBirth: z.coerce.date(),
-  diagnosis: z.string().optional(),
+  diagnosis: DiagnosisSchema,
   notes: z.string().optional(),
 });
 

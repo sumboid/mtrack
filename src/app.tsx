@@ -29,7 +29,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <PWAUpdateNotification />
-      <Router basename="/mtrack">
+      <Router>
         <Box sx={{ 
           display: 'flex', 
           flexDirection: 'column',

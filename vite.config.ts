@@ -17,11 +17,11 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/mtrack/',
-        start_url: '/mtrack/',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
-            src: '/mtrack/vite.svg',
+            src: '/vite.svg',
             sizes: 'any',
             type: 'image/svg+xml'
           }
@@ -31,22 +31,22 @@ export default defineConfig({
             name: 'Add Patient',
             short_name: 'New Patient',
             description: 'Quickly add a new patient',
-            url: '/mtrack/?action=add-patient',
-            icons: [{ src: '/mtrack/vite.svg', sizes: 'any' }]
+            url: '/?action=add-patient',
+            icons: [{ src: '/vite.svg', sizes: 'any' }]
           },
           {
             name: 'View Patients',
             short_name: 'Patients',
             description: 'View all patients',
-            url: '/mtrack/',
-            icons: [{ src: '/mtrack/vite.svg', sizes: 'any' }]
+            url: '/',
+            icons: [{ src: '/vite.svg', sizes: 'any' }]
           }
         ]
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         // Properly cache all navigation requests - serve cached app when offline
-        navigateFallback: '/mtrack/index.html',
+        navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /\/manifest\.webmanifest$/],
         // Clean URLs strategy
         cleanupOutdatedCaches: true,
@@ -82,10 +82,10 @@ export default defineConfig({
         ]
       },
       devOptions: {
-        enabled: true,
+        enabled: false, // Disable PWA in dev to avoid glob pattern warnings
         type: 'module'
       }
     })
   ],
-  base: '/mtrack/'
+  base: '/'
 })

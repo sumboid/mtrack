@@ -18,7 +18,8 @@ const LanguageSelector: React.FC = () => {
 
   const languages = [
     { code: 'en', label: t('languageSelector.english') },
-    { code: 'es', label: t('languageSelector.spanish') },
+    { code: 'hy', label: t('languageSelector.armenian') },
+    { code: 'ka', label: t('languageSelector.georgian') },
     { code: 'de', label: t('languageSelector.german') },
     { code: 'ru', label: t('languageSelector.russian') }
   ];

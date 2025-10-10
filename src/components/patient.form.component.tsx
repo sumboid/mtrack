@@ -7,6 +7,11 @@ import {
   TextField,
   Box,
   Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Divider,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -15,6 +20,8 @@ import dayjs from 'dayjs';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { Patient, PatientData } from '../models/patient.model';
+import { DiagnosisFormFactory, type DiagnosisType } from './diagnoses/diagnosis.factory.component';
+import type { BreastCancer } from '../models/diagnoses/breast.cancer';
 
 // Static styles
 const cardContentSx = { mb: 3 };
@@ -44,14 +51,31 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
 }) => {
   const { t } = useTranslation();
 
-  // Split state to prevent unnecessary re-renders
   const [name, setName] = React.useState(() => patient?.name || '');
   const [email, setEmail] = React.useState(() => patient?.email || '');
   const [phone, setPhone] = React.useState(() => patient?.phone || '');
   const [dateOfBirth, setDateOfBirth] = React.useState(() => 
     patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : dayjs()
   );
-  const [diagnosis, setDiagnosis] = React.useState(() => patient?.diagnosis || '');
+  const [diagnosisType, setDiagnosisType] = React.useState<DiagnosisType>(() => 
+    patient?.diagnosis?.diagnosis || 'breast-cancer'
+  );
+  const [diagnosisDetails, setDiagnosisDetails] = React.useState<BreastCancer['details']>(() => 
+    patient?.diagnosis?.diagnosis === 'breast-cancer' 
+      ? patient.diagnosis.details 
+      : {
+          localization: 'left',
+          tnmT: 'T1',
+          tnmN: 'N0',
+          tnmM: 'M0',
+          metastaticStatus: 'early',
+          tumorType: 'invasive-nst',
+          er: '0',
+          pr: '0',
+          her2: '0',
+          grade: 'G2',
+        }
+  );
   const [notes, setNotes] = React.useState(() => patient?.notes || '');
 
   const [errors, setErrors] = React.useState<Partial<Record<keyof PatientData, string>>>({});
@@ -88,8 +112,24 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
     }
   }, []);
 
-  const handleDiagnosisChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setDiagnosis(e.target.value);
+  const handleDiagnosisTypeChange = React.useCallback((e: { target: { value: unknown } }) => {
+    setDiagnosisType(e.target.value as DiagnosisType);
+    setDiagnosisDetails({
+      localization: 'left',
+      tnmT: 'T1',
+      tnmN: 'N0',
+      tnmM: 'M0',
+      metastaticStatus: 'early',
+      tumorType: 'invasive-nst',
+      er: '0',
+      pr: '0',
+      her2: '0',
+      grade: 'G2',
+    });
+  }, []);
+
+  const handleDiagnosisDetailsChange = React.useCallback((value: BreastCancer['details']) => {
+    setDiagnosisDetails(value);
   }, []);
 
   const handleNotesChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,6 +166,10 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
       return;
     }
 
+    const diagnosis = diagnosisType === 'breast-cancer' 
+      ? { diagnosis: 'breast-cancer' as const, details: diagnosisDetails }
+      : { diagnosis: 'breast-cancer' as const, details: diagnosisDetails };
+
     onSubmit({ 
       name, 
       email, 
@@ -134,7 +178,7 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
       diagnosis, 
       notes 
     });
-  }, [name, email, phone, dateOfBirth, diagnosis, notes, onSubmit, validate]);
+  }, [name, email, phone, dateOfBirth, diagnosisType, diagnosisDetails, notes, onSubmit, validate]);
 
   // Memoize conditional translations
   const titleText = React.useMemo(() => 
@@ -204,13 +248,25 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
         </Grid>
 
         <Grid size={fullWidthGridSize}>
-          <TextField
-            fullWidth
-            label={t('patient.form.diagnosis')}
-            value={diagnosis}
-            onChange={handleDiagnosisChange}
-            multiline
-            rows={2}
+          <FormControl fullWidth>
+            <InputLabel>{t('patient.form.diagnosisType')}</InputLabel>
+            <Select
+              value={diagnosisType}
+              onChange={handleDiagnosisTypeChange}
+              label={t('patient.form.diagnosisType')}
+            >
+              <MenuItem value="breast-cancer">{t('diagnosis.breastCancer.name')}</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid size={fullWidthGridSize}>
+          <Divider sx={{ my: 2 }} />
+          <DiagnosisFormFactory
+            type={diagnosisType}
+            value={diagnosisDetails}
+            onChange={handleDiagnosisDetailsChange}
+            errors={{}}
           />
         </Grid>
 

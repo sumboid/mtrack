@@ -1,0 +1,13 @@
+export { BaseMedicalRecordForm } from './base.form.component';
+export { CategoryFormFieldsFactory } from './category.form.fields.factory';
+export { SurgeryFormFields } from './surgery.form.fields';
+export { ChemotherapyFormFields } from './chemotherapy.form.fields';
+export { RadiotherapyFormFields } from './radiotherapy.form.fields';
+export { ImmunotherapyFormFields } from './immunotherapy.form.fields';
+export { LabTestFormFields } from './lab.test.form.fields';
+export { ImagingFormFields } from './imaging.form.fields';
+export { HospitalizationFormFields } from './hospitalization.form.fields';
+export { DiagnosisFormFields } from './diagnosis.form.fields';
+export { FollowUpFormFields } from './follow.up.form.fields';
+export { ConsultationFormFields } from './consultation.form.fields';
+export { OtherFormFields } from './other.form.fields';

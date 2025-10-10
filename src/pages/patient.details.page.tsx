@@ -11,11 +11,6 @@ import {
   Divider,
   Paper,
   List,
-  ListItem,
-  Chip,
-  IconButton,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -26,8 +21,6 @@ import {
   MedicalServices as MedicalIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon,
-  MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 import { useActor, useMachine } from '@xstate/react';
 import { patientMachine } from '../fsm/list.machine';
@@ -37,6 +30,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CategoryDefs } from '../models/config';
 import { AddMedicalRecordDialog, EditMedicalRecordDialog } from '../components/medical.record.dialog.component';
+import { DiagnosisDisplayFactory } from '../components/diagnoses/diagnosis.factory.component';
+import { MedicalRecordListItem } from '../components/medical.record.list.item.component';
 
 // SX Props
 const containerSx = { mt: 4, mb: 4 };
@@ -50,29 +45,14 @@ const iconSx = { fontSize: 20, mr: 1, color: 'text.secondary' };
 const medicalIconSx = { mr: 1 };
 const emptyStatePaperSx = { p: 3, textAlign: 'center', bgcolor: 'action.hover' };
 const addFirstButtonSx = { mt: 2 };
-const listItemSx = {
-  border: '1px solid',
-  borderColor: 'divider',
-  borderRadius: 2,
-  mb: 2,
-  p: 2,
-  display: 'flex',
-  alignItems: 'flex-start',
-  '&:hover': {
-    bgcolor: 'action.hover',
-  },
-};
-const recordContentBoxSx = { flex: 1, pr: 2 };
-const recordHeaderSx = { mb: 1 };
-const treatmentSx = { mb: 1 };
-const dateRangeSx = { mb: 0.5 };
-const menuIconSx = { mr: 1 };
 
 // Grid sizes
 const patientInfoGridSize = { xs: 12, md: 4 };
 const medicalHistoryGridSize = { xs: 12, md: 8 };
 const gridSpacing = 3;
-const headerGap = 1;
+
+// Treatment display sx - used in renderRecordDetails callback
+const treatmentSx = { mb: 1 };
 
 const PatientDetailsPage: React.FC = () => {
   const [state] = useActor(patientMachine);
@@ -86,8 +66,6 @@ const PatientDetailsPage: React.FC = () => {
     [patientId]
   );
   const [historyState, historySend] = useMachine(medicalHistoryMachine!);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [selectedRecord, setSelectedRecord] = React.useState<MedicalHistoryRecord | null>(null);
   const [addDialogOpen, setAddDialogOpen] = React.useState(false);
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [recordToEdit, setRecordToEdit] = React.useState<MedicalHistoryRecord | null>(null);
@@ -130,42 +108,216 @@ const PatientDetailsPage: React.FC = () => {
     return age;
   }, []);
 
-  const handleMenuOpen = React.useCallback((event: React.MouseEvent<HTMLElement>, record: MedicalHistoryRecord) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedRecord(record);
+  const handleEditRecord = React.useCallback((record: MedicalHistoryRecord) => {
+    setRecordToEdit(record);
+    setEditDialogOpen(true);
   }, []);
 
-  const handleMenuClose = React.useCallback(() => {
-    setAnchorEl(null);
-    setSelectedRecord(null);
-  }, []);
-
-  const handleDeleteRecord = React.useCallback(() => {
-    if (selectedRecord) {
-      historySend({ type: 'DELETE_RECORD', recordId: selectedRecord.id });
-      handleMenuClose();
-    }
-  }, [selectedRecord, historySend, handleMenuClose]);
+  const handleDeleteRecord = React.useCallback((record: MedicalHistoryRecord) => {
+    historySend({ type: 'DELETE_RECORD', recordId: record.id });
+  }, [historySend]);
 
   const formatDateTime = React.useCallback((date: Date) => {
     return date.toLocaleDateString();
   }, []);
 
-  const getCategoryColor = React.useCallback((category: MedicalRecordCategory) => {
-    return CategoryDefs[category].color;
+  // Helper function to translate enum values like response types
+  const translateEnumValue = React.useCallback((value: string, prefix: string = '') => {
+    // Convert kebab-case to camelCase for translation keys
+    const camelCase = value.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    const translationKey = prefix ? `${prefix}.${camelCase}` : `patientDetails.${camelCase}`;
+    
+    // Try to get translation, fallback to formatted value if not found
+    const translated = t(translationKey);
+    if (translated === translationKey) {
+      // Fallback: convert "stable-disease" to "Stable Disease"
+      return value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
+    return translated;
+  }, [t]);
+
+  const renderRecordDetails = React.useCallback((record: MedicalHistoryRecord) => {
+    switch (record.category) {
+      case 'surgery':
+        return (
+          <>
+            {record.surgeryType && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.surgeryType')}:</strong> {record.surgeryType}
+              </Typography>
+            )}
+            {record.location && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.location')}:</strong> {record.location}
+              </Typography>
+            )}
+            {record.outcome && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.outcome')}:</strong> {record.outcome}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'chemotherapy':
+        return (
+          <>
+            {record.regimen && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.regimen')}:</strong> {record.regimen}
+              </Typography>
+            )}
+            {record.cycles && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.cycles')}:</strong> {record.cycles}
+              </Typography>
+            )}
+            {record.response && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.response')}:</strong> {translateEnumValue(record.response, 'patientDetails')}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'radiotherapy':
+        return (
+          <>
+            {record.targetArea && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.targetArea')}:</strong> {record.targetArea}
+              </Typography>
+            )}
+            {record.totalDose && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.totalDose')}:</strong> {record.totalDose} Gy
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'immunotherapy':
+        return (
+          <>
+            {record.agent && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.agent')}:</strong> {record.agent}
+              </Typography>
+            )}
+            {record.response && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.response')}:</strong> {translateEnumValue(record.response, 'patientDetails')}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'lab_test':
+        return (
+          <>
+            {record.testType && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.testType')}:</strong> {record.testType}
+              </Typography>
+            )}
+            {record.results && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.results')}:</strong> {record.results}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'imaging':
+        return (
+          <>
+            {record.imagingType && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.imagingType')}:</strong> {record.imagingType}
+              </Typography>
+            )}
+            {record.findings && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.findings')}:</strong> {record.findings}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'hospitalization':
+        return (
+          <>
+            {record.reason && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.reason')}:</strong> {record.reason}
+              </Typography>
+            )}
+            {record.department && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.department')}:</strong> {record.department}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'diagnosis':
+        return (
+          <>
+            {record.diagnosisName && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.diagnosisName')}:</strong> {record.diagnosisName}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'follow_up':
+        return (
+          <>
+            {record.findings && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.findings')}:</strong> {record.findings}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'consultation':
+        return (
+          <>
+            {record.specialist && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.specialist')}:</strong> {record.specialist}
+              </Typography>
+            )}
+            {record.reason && (
+              <Typography variant="body2" color="text.secondary">
+                <strong>{t('patientDetails.reason')}:</strong> {record.reason}
+              </Typography>
+            )}
+          </>
+        );
+      
+      case 'other':
+        return (
+          <>
+            {record.description && (
+              <Typography variant="body1" sx={treatmentSx}>
+                <strong>{t('patientDetails.description')}:</strong> {record.description}
+              </Typography>
+            )}
+          </>
+        );
+    }
+  }, [t, translateEnumValue]);
+
+  const getCategoryColor = React.useCallback((category: MedicalRecordCategory): string => {
+    return CategoryDefs[category].color || 'primary';
   }, []);
 
   const getCategoryName = React.useCallback((category: MedicalRecordCategory) => {
     return t(CategoryDefs[category].translationKey);
   }, [t]);
-
-  const handleEditClick = React.useCallback(() => {
-    if (selectedRecord) {
-      setRecordToEdit(selectedRecord);
-      setEditDialogOpen(true);
-    }
-    handleMenuClose();
-  }, [selectedRecord, handleMenuClose]);
 
   const sortedRecords = React.useMemo(() => 
     [...historyState.context.records].sort((a, b) => b.date.getTime() - a.date.getTime()),
@@ -197,7 +349,7 @@ const PatientDetailsPage: React.FC = () => {
   
   if (state.matches('loading')) {
     return (
-      <Container maxWidth="lg" sx={containerSx}>
+      <Container maxWidth="xl" sx={containerSx}>
         <Typography variant="h4" component="h1" gutterBottom>
           {t('patientDetails.loading')}
         </Typography>
@@ -207,7 +359,7 @@ const PatientDetailsPage: React.FC = () => {
 
   if (!patient) {
     return (
-      <Container maxWidth="lg" sx={containerSx}>
+      <Container maxWidth="xl" sx={containerSx}>
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={handleBackToPatients}
@@ -226,7 +378,7 @@ const PatientDetailsPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={containerSx}>
+    <Container maxWidth="xl" sx={containerSx}>
       <Button
         startIcon={<ArrowBackIcon />}
         onClick={handleBackToPatients}
@@ -271,29 +423,37 @@ const PatientDetailsPage: React.FC = () => {
                 </Box>
               </Box>
 
-              {(patient.diagnosis || patient.notes) && (
+              {patient.diagnosis && (
                 <>
                   <Divider sx={dividerSx} />
-                  {patient.diagnosis && (
-                    <Box sx={infoBoxSx}>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        {t('patient.form.diagnosis')}
-                      </Typography>
-                      <Typography variant="body2">
-                        {patient.diagnosis}
-                      </Typography>
+                  <Box sx={infoBoxSx}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      {t('patient.form.diagnosis')}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                      {t(`diagnosis.breastCancer.name`)}
+                    </Typography>
+                    <Box mt={1}>
+                      <DiagnosisDisplayFactory
+                        type={patient.diagnosis.diagnosis}
+                        details={patient.diagnosis.details}
+                      />
                     </Box>
-                  )}
-                  {patient.notes && (
-                    <Box sx={infoBoxSx}>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        {t('patient.form.notes')}
-                      </Typography>
-                      <Typography variant="body2">
-                        {patient.notes}
-                      </Typography>
-                    </Box>
-                  )}
+                  </Box>
+                </>
+              )}
+
+              {patient.notes && (
+                <>
+                  <Divider sx={dividerSx} />
+                  <Box sx={infoBoxSx}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      {t('patient.form.notes')}
+                    </Typography>
+                    <Typography variant="body2">
+                      {patient.notes}
+                    </Typography>
+                  </Box>
                 </>
               )}
 
@@ -318,16 +478,14 @@ const PatientDetailsPage: React.FC = () => {
                   <MedicalIcon sx={medicalIconSx} />
                   {t('patientDetails.medicalHistory')}
                 </Typography>
-                <Box display="flex" gap={headerGap}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<AddIcon />}
-                    onClick={handleOpenAddDialog}
-                  >
-                    {t('patientDetails.addRecord')}
-                  </Button>
-                </Box>
+                <Button
+                  variant="contained"
+                  size="small"
+                  startIcon={<AddIcon />}
+                  onClick={handleOpenAddDialog}
+                >
+                  {t('patientDetails.addRecord')}
+                </Button>
               </Box>
 
               {historyState.matches('loading') ? (
@@ -353,76 +511,24 @@ const PatientDetailsPage: React.FC = () => {
               ) : (
                 <List>
                   {sortedRecords.map((record) => (
-                      <ListItem
-                        key={record.id}
-                        sx={listItemSx}
-                      >
-                        <Box sx={recordContentBoxSx}>
-                          <Box display="flex" alignItems="center" gap={headerGap} sx={recordHeaderSx}>
-                            <Chip
-                              label={getCategoryName(record.category)}
-                              size="small"
-                              sx={{
-                                bgcolor: `${getCategoryColor(record.category)}.main`,
-                                color: 'white',
-                              }}
-                            />
-                            <Typography variant="body2" color="text.secondary">
-                              {formatDateTime(record.date)}
-                            </Typography>
-                          </Box>
-                          
-                          {record.treatment && (
-                            <Typography variant="body1" sx={treatmentSx}>
-                              <strong>{t('patientDetails.treatment')}:</strong> {record.treatment}
-                            </Typography>
-                          )}
-                          
-                          {record.startDate && (
-                            <Typography variant="body2" color="text.secondary" sx={dateRangeSx}>
-                              <strong>{t('patientDetails.startDate')}:</strong> {formatDate(record.startDate)}
-                              {record.endDate && (
-                                <> → <strong>{t('patientDetails.endDate')}:</strong> {formatDate(record.endDate)}</>
-                              )}
-                            </Typography>
-                          )}
-                          
-                          {record.notes && (
-                            <Typography variant="body2" color="text.secondary">
-                              <strong>{t('patientDetails.notes')}:</strong> {record.notes}
-                            </Typography>
-                          )}
-                        </Box>
-                        
-                        <IconButton 
-                          edge="end" 
-                          onClick={(e) => handleMenuOpen(e, record)}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </ListItem>
-                    ))}
+                    <MedicalRecordListItem
+                      key={record.id}
+                      record={record}
+                      getCategoryName={getCategoryName}
+                      getCategoryColor={getCategoryColor}
+                      formatDate={formatDate}
+                      formatDateTime={formatDateTime}
+                      renderRecordDetails={renderRecordDetails}
+                      onEdit={handleEditRecord}
+                      onDelete={handleDeleteRecord}
+                    />
+                  ))}
                 </List>
               )}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleEditClick}>
-          <EditIcon sx={menuIconSx} fontSize="small" />
-          {t('common.edit')}
-        </MenuItem>
-        <MenuItem onClick={handleDeleteRecord}>
-          <DeleteIcon sx={menuIconSx} fontSize="small" />
-          {t('common.delete')}
-        </MenuItem>
-      </Menu>
 
       {patient && (
         <>
