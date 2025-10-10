@@ -44,12 +44,15 @@ export default defineConfig({
         ]
       },
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        // Add cache busting - change this version number when you need to force update
+        cacheId: 'mtrack-v1.0.1',
         // Properly cache all navigation requests - serve cached app when offline
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api/, /\/manifest\.webmanifest$/],
-        // Clean URLs strategy
-        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
