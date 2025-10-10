@@ -26,6 +26,7 @@ import type { BreastCancer } from '../models/diagnoses/breast.cancer';
 // Static styles
 const cardContentSx = { mb: 3 };
 const buttonContainerSx = { display: 'flex', gap: 2, justifyContent: 'flex-end' };
+const formContainerSx = { width: '100%', ml: 0 }; // Prevent Grid negative margins from causing overflow
 
 // Static Grid sizes
 const fullWidthGridSize = { xs: 12 };
@@ -193,7 +194,7 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
 
   const formContent = (
     <Box component="form" onSubmit={handleSubmit}>
-      <Grid container spacing={gridSpacing}>
+      <Grid container spacing={gridSpacing} sx={formContainerSx}>
         <Grid size={halfWidthGridSize}>
           <TextField
             fullWidth

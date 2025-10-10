@@ -48,7 +48,7 @@ export const AddPatientDialog: React.FC<AddPatientDialogProps> = ({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers sx={{ pt: 3 }}>
+      <DialogContent dividers sx={{ pt: 3, overflow: 'hidden', overflowY: 'auto' }}>
         <PatientForm
           mode="add"
           onSubmit={onSubmit}
@@ -93,7 +93,7 @@ export const EditPatientDialog: React.FC<EditPatientDialogProps> = ({
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers sx={{ pt: 3 }}>
+      <DialogContent dividers sx={{ pt: 3, overflow: 'hidden', overflowY: 'auto' }}>
         <PatientForm
           mode="edit"
           patient={patient}

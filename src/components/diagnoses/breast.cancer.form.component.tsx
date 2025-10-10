@@ -16,6 +16,7 @@ const gridSpacing = 2;
 const fullWidthGridSize = { xs: 12 };
 const halfWidthGridSize = { xs: 12, sm: 6 };
 const thirdWidthGridSize = { xs: 12, sm: 4 };
+const gridContainerSx = { width: '100%', ml: 0 }; // Prevent negative margins overflow
 
 interface BreastCancerFormProps {
   value: BreastCancer['details'];
@@ -52,7 +53,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = ({
         {t('diagnosis.breastCancer.details')}
       </Typography>
       
-      <Grid container spacing={gridSpacing}>
+      <Grid container spacing={gridSpacing} sx={gridContainerSx}>
         <Grid size={halfWidthGridSize}>
           <FormControl fullWidth error={!!errors.localization}>
             <InputLabel>{t('diagnosis.breastCancer.localization')}</InputLabel>
