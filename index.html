@@ -6,10 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#1976d2" />
+    <!-- Theme color changes based on user's dark/light mode preference -->
+    <!-- Colors from src/constants/theme.ts - single source of truth -->
+    <meta name="theme-color" content="#0A0F1A" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F5F6F0" media="(prefers-color-scheme: light)" />
     <meta name="description" content="Track patient medical records and history offline" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="MediTrack" />
     
     <title>MediTrack</title>

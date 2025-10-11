@@ -1,15 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { RadiotherapyFields } from '../../models/medical.history.model';
 
-interface RadiotherapyFormFieldsProps {
-  value: {
-    targetArea?: string;
-    totalDose?: string;
-    fractions?: string;
-    technique?: string;
-    sideEffects?: string;
-  };
+export interface RadiotherapyFormFieldsProps {
+  value: RadiotherapyFields;
   onChange: (field: string, value: any) => void;
 }
 

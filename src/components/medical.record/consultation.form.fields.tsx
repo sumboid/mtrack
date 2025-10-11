@@ -1,13 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { ConsultationFields } from '../../models/medical.history.model';
 
-interface ConsultationFormFieldsProps {
-  value: {
-    specialist?: string;
-    reason?: string;
-    recommendations?: string;
-  };
+export interface ConsultationFormFieldsProps {
+  value: ConsultationFields;
   onChange: (field: string, value: any) => void;
 }
 

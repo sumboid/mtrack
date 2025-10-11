@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { THEME_COLORS } from './src/constants/theme'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,8 +14,8 @@ export default defineConfig({
         name: 'MediTrack - Medical History Tracker',
         short_name: 'MediTrack',
         description: 'Track patient medical records and history offline',
-        theme_color: '#7278F2', // Vibrant blue from palette
-        background_color: '#0A0F1A', // Dark background from palette
+        theme_color: THEME_COLORS.dark, // Default dark theme - overridden by meta tag
+        background_color: THEME_COLORS.dark,
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -90,5 +91,27 @@ export default defineConfig({
       }
     })
   ],
-  base: '/'
+  base: '/',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Split vendor chunks for better caching
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'mui-vendor': ['@mui/material', '@mui/icons-material'],
+          'xstate-vendor': ['xstate', '@xstate/react'],
+        },
+      },
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+    // Enable minification
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true, // Remove console.logs in production
+        drop_debugger: true,
+      },
+    },
+  },
 })

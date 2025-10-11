@@ -1,18 +1,13 @@
 import React from 'react';
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { SurgeryFields } from '../../models/medical.history.model';
 
 const halfWidthGridSize = { xs: 12, md: 6 };
 const fullWidthGridSize = { xs: 12 };
 
 export interface SurgeryFormFieldsProps {
-  value: {
-    surgeryType?: string;
-    location?: string;
-    surgeon?: string;
-    outcome?: string;
-    complications?: string;
-  };
+  value: SurgeryFields;
   onChange: (field: string, value: any) => void;
 }
 

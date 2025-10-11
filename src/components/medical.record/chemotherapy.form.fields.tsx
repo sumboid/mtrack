@@ -1,16 +1,12 @@
 import React from 'react';
 import { Grid, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { ChemotherapyFields } from '../../models/medical.history.model';
 
 const halfWidthGridSize = { xs: 12, md: 6 };
 
 export interface ChemotherapyFormFieldsProps {
-  value: {
-    regimen?: string;
-    cycles?: number;
-    response?: string;
-    sideEffects?: string;
-  };
+  value: ChemotherapyFields;
   onChange: (field: string, value: any) => void;
 }
 

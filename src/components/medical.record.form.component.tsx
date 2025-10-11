@@ -29,6 +29,8 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
     record?.category || 'consultation'
   );
 
+  // Note: Using Record<string, any> here because category can change dynamically
+  // Each specific category field component uses proper types (SurgeryFields, ChemotherapyFields, etc.)
   const [categoryFields, setCategoryFields] = React.useState<Record<string, any>>(() => {
     if (!record) return {};
     const fields: Record<string, any> = {};
@@ -43,20 +45,20 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
         break;
       case 'chemotherapy':
         fields.regimen = record.regimen || '';
-        fields.cycles = record.cycles || '';
-        fields.response = record.response || '';
+        fields.cycles = record.cycles || undefined;
+        fields.response = record.response || undefined;
         fields.sideEffects = record.sideEffects || '';
         break;
       case 'radiotherapy':
         fields.targetArea = record.targetArea || '';
-        fields.totalDose = record.totalDose || '';
-        fields.fractions = record.fractions || '';
+        fields.totalDose = record.totalDose || undefined;
+        fields.fractions = record.fractions || undefined;
         fields.technique = record.technique || '';
         fields.sideEffects = record.sideEffects || '';
         break;
       case 'immunotherapy':
         fields.agent = record.agent || '';
-        fields.response = record.response || '';
+        fields.response = record.response || undefined;
         fields.sideEffects = record.sideEffects || '';
         break;
       case 'lab_test':

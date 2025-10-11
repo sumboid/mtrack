@@ -1,12 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { FollowUpFields } from '../../models/medical.history.model';
 
-interface FollowUpFormFieldsProps {
-  value: {
-    findings?: string;
-    plan?: string;
-  };
+export interface FollowUpFormFieldsProps {
+  value: FollowUpFields;
   onChange: (field: string, value: any) => void;
 }
 

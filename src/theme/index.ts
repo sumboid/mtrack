@@ -1,5 +1,8 @@
 import { createTheme } from '@mui/material/styles';
 import { categoryColors } from './palette';
+import { THEME_COLORS } from '../constants/theme';
+
+export { THEME_COLORS };
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -22,7 +25,7 @@ const darkPalette = {
     dark: '#D9564C',
   },
   background: {
-    default: '#0A0F1A', // Darker version of The-Games-We-Loved-2
+    default: THEME_COLORS.dark, // Darker version of The-Games-We-Loved-2
     paper: '#152030', // Slightly lighter, based on The-Games-We-Loved-2
   },
   text: {
@@ -48,7 +51,7 @@ const lightPalette = {
     dark: '#D9564C',
   },
   background: {
-    default: '#F5F6F0', // Light version of cream
+    default: THEME_COLORS.light, // Light version of cream
     paper: '#FFFFFF',
   },
   text: {

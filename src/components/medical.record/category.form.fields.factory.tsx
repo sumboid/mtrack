@@ -1,5 +1,18 @@
 import React from 'react';
-import type { MedicalRecordCategory } from '../../models/medical.history.model';
+import type { 
+  MedicalRecordCategory,
+  SurgeryFields,
+  ChemotherapyFields,
+  RadiotherapyFields,
+  ImmunotherapyFields,
+  LabTestFields,
+  ImagingFields,
+  HospitalizationFields,
+  DiagnosisFields,
+  FollowUpFields,
+  ConsultationFields,
+  OtherFields,
+} from '../../models/medical.history.model';
 import { SurgeryFormFields } from './surgery.form.fields';
 import { ChemotherapyFormFields } from './chemotherapy.form.fields';
 import { RadiotherapyFormFields } from './radiotherapy.form.fields';
@@ -12,8 +25,24 @@ import { FollowUpFormFields } from './follow.up.form.fields';
 import { ConsultationFormFields } from './consultation.form.fields';
 import { OtherFormFields } from './other.form.fields';
 
+// Union type for all category-specific fields
+export type CategoryFields =
+  | SurgeryFields
+  | ChemotherapyFields
+  | RadiotherapyFields
+  | ImmunotherapyFields
+  | LabTestFields
+  | ImagingFields
+  | HospitalizationFields
+  | DiagnosisFields
+  | FollowUpFields
+  | ConsultationFields
+  | OtherFields;
+
 interface CategoryFormFieldsProps {
   category: MedicalRecordCategory;
+  // Note: Using Record<string, any> because category can change dynamically
+  // Each specific form field component will enforce proper types based on category
   value: Record<string, any>;
   onChange: (field: string, value: any) => void;
 }

@@ -1,12 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { LabTestFields } from '../../models/medical.history.model';
 
-interface LabTestFormFieldsProps {
-  value: {
-    testType?: string;
-    results?: string;
-  };
+export interface LabTestFormFieldsProps {
+  value: LabTestFields;
   onChange: (field: string, value: any) => void;
 }
 

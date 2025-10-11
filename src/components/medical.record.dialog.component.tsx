@@ -12,6 +12,14 @@ import { MedicalRecordForm } from './medical.record.form.component';
 import type { CreatePointRecordParams, CreateContinuousRecordParams } from '../fsm/medical.history.machine';
 import type { MedicalHistoryRecord } from '../models/medical.history.model';
 
+const closeButtonSx = {
+  position: 'absolute',
+  right: 8,
+  top: 8,
+} as const;
+
+const dialogContentSx = { pt: 3 } as const;
+
 interface AddMedicalRecordDialogProps {
   open: boolean;
   onClose: () => void;
@@ -46,16 +54,12 @@ export const AddMedicalRecordDialog: React.FC<AddMedicalRecordDialogProps> = ({
         <IconButton
           aria-label="close"
           onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-          }}
+          sx={closeButtonSx}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers sx={{ pt: 3 }}>
+      <DialogContent dividers sx={dialogContentSx}>
         <MedicalRecordForm
           mode="add"
           patientId={patientId}
@@ -88,16 +92,12 @@ export const EditMedicalRecordDialog: React.FC<EditMedicalRecordDialogProps> = (
         <IconButton
           aria-label="close"
           onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-          }}
+          sx={closeButtonSx}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers sx={{ pt: 3 }}>
+      <DialogContent dividers sx={dialogContentSx}>
         <MedicalRecordForm
           mode="edit"
           patientId={patientId}

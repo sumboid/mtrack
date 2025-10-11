@@ -1,11 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { OtherFields } from '../../models/medical.history.model';
 
-interface OtherFormFieldsProps {
-  value: {
-    description?: string;
-  };
+export interface OtherFormFieldsProps {
+  value: OtherFields;
   onChange: (field: string, value: any) => void;
 }
 

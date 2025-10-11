@@ -1,13 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { HospitalizationFields } from '../../models/medical.history.model';
 
-interface HospitalizationFormFieldsProps {
-  value: {
-    reason?: string;
-    department?: string;
-    outcome?: string;
-  };
+export interface HospitalizationFormFieldsProps {
+  value: HospitalizationFields;
   onChange: (field: string, value: any) => void;
 }
 

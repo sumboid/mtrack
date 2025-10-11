@@ -24,97 +24,136 @@ const BaseMedicalRecordSchema = z.object({
     z.coerce.date().optional()
   ),
   
+  // Notes field - common to all records
+  notes: z.string().optional(),
+  
   createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
 });
 
-// Extended schemas for specific categories with additional fields
-export const SurgeryRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('surgery'),
+// Category-specific field schemas (exported for use in forms)
+export const SurgeryFieldsSchema = z.object({
   surgeryType: z.string().optional(),
   location: z.string().optional(),
   surgeon: z.string().optional(),
   outcome: z.string().optional(),
   complications: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const ChemotherapyRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('chemotherapy'),
+export const ChemotherapyFieldsSchema = z.object({
   regimen: z.string().optional(),
-  cycles: z.number().optional(),
+  cycles: z.coerce.number().optional(),
   response: z.enum(['complete-response', 'partial-response', 'stable-disease', 'progressive-disease', 'not-assessed']).optional(),
   sideEffects: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const RadiotherapyRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('radiotherapy'),
+export const RadiotherapyFieldsSchema = z.object({
   targetArea: z.string().optional(),
-  totalDose: z.number().optional(),
-  fractions: z.number().optional(),
+  totalDose: z.coerce.number().optional(),
+  fractions: z.coerce.number().optional(),
   technique: z.string().optional(),
   sideEffects: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const ImmunotherapyRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('immunotherapy'),
+export const ImmunotherapyFieldsSchema = z.object({
   agent: z.string().optional(),
   response: z.enum(['complete-response', 'partial-response', 'stable-disease', 'progressive-disease', 'not-assessed']).optional(),
   sideEffects: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const LabTestRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('lab_test'),
+export const LabTestFieldsSchema = z.object({
   testType: z.string().optional(),
   results: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const ImagingRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('imaging'),
+export const ImagingFieldsSchema = z.object({
   imagingType: z.string().optional(),
   findings: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const HospitalizationRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('hospitalization'),
+export const HospitalizationFieldsSchema = z.object({
   reason: z.string().optional(),
   department: z.string().optional(),
   outcome: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const DiagnosisRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('diagnosis'),
+export const DiagnosisFieldsSchema = z.object({
   diagnosisCode: z.string().optional(),
   diagnosisName: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const FollowUpRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('follow_up'),
+export const FollowUpFieldsSchema = z.object({
   findings: z.string().optional(),
   plan: z.string().optional(),
-  notes: z.string().optional(),
 });
 
-export const ConsultationRecordSchema = BaseMedicalRecordSchema.extend({
-  category: z.literal('consultation'),
+export const ConsultationFieldsSchema = z.object({
   specialist: z.string().optional(),
   reason: z.string().optional(),
   recommendations: z.string().optional(),
-  notes: z.string().optional(),
 });
+
+export const OtherFieldsSchema = z.object({
+  description: z.string().optional(),
+});
+
+// TypeScript types for category-specific fields
+export type SurgeryFields = z.infer<typeof SurgeryFieldsSchema>;
+export type ChemotherapyFields = z.infer<typeof ChemotherapyFieldsSchema>;
+export type RadiotherapyFields = z.infer<typeof RadiotherapyFieldsSchema>;
+export type ImmunotherapyFields = z.infer<typeof ImmunotherapyFieldsSchema>;
+export type LabTestFields = z.infer<typeof LabTestFieldsSchema>;
+export type ImagingFields = z.infer<typeof ImagingFieldsSchema>;
+export type HospitalizationFields = z.infer<typeof HospitalizationFieldsSchema>;
+export type DiagnosisFields = z.infer<typeof DiagnosisFieldsSchema>;
+export type FollowUpFields = z.infer<typeof FollowUpFieldsSchema>;
+export type ConsultationFields = z.infer<typeof ConsultationFieldsSchema>;
+export type OtherFields = z.infer<typeof OtherFieldsSchema>;
+
+// Full record schemas (base + category-specific fields)
+export const SurgeryRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('surgery'),
+}).merge(SurgeryFieldsSchema);
+
+export const ChemotherapyRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('chemotherapy'),
+}).merge(ChemotherapyFieldsSchema);
+
+export const RadiotherapyRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('radiotherapy'),
+}).merge(RadiotherapyFieldsSchema);
+
+export const ImmunotherapyRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('immunotherapy'),
+}).merge(ImmunotherapyFieldsSchema);
+
+export const LabTestRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('lab_test'),
+}).merge(LabTestFieldsSchema);
+
+export const ImagingRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('imaging'),
+}).merge(ImagingFieldsSchema);
+
+export const HospitalizationRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('hospitalization'),
+}).merge(HospitalizationFieldsSchema);
+
+export const DiagnosisRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('diagnosis'),
+}).merge(DiagnosisFieldsSchema);
+
+export const FollowUpRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('follow_up'),
+}).merge(FollowUpFieldsSchema);
+
+export const ConsultationRecordSchema = BaseMedicalRecordSchema.extend({
+  category: z.literal('consultation'),
+}).merge(ConsultationFieldsSchema);
 
 export const OtherRecordSchema = BaseMedicalRecordSchema.extend({
   category: z.literal('other'),
-  description: z.string().optional(),
-  notes: z.string().optional(),
-});
+}).merge(OtherFieldsSchema);
 
 // Union type for all medical records
 export const MedicalHistoryRecordSchema = z.discriminatedUnion('category', [

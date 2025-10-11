@@ -1,13 +1,10 @@
 import React from 'react';
 import { TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { ImmunotherapyFields } from '../../models/medical.history.model';
 
-interface ImmunotherapyFormFieldsProps {
-  value: {
-    agent?: string;
-    response?: string;
-    sideEffects?: string;
-  };
+export interface ImmunotherapyFormFieldsProps {
+  value: ImmunotherapyFields;
   onChange: (field: string, value: any) => void;
 }
 

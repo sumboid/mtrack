@@ -1,12 +1,10 @@
 import React from 'react';
 import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import type { DiagnosisFields } from '../../models/medical.history.model';
 
-interface DiagnosisFormFieldsProps {
-  value: {
-    diagnosisCode?: string;
-    diagnosisName?: string;
-  };
+export interface DiagnosisFormFieldsProps {
+  value: DiagnosisFields;
   onChange: (field: string, value: any) => void;
 }
 
