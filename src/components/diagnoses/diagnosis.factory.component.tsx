@@ -14,7 +14,7 @@ interface DiagnosisFormFactoryProps {
   errors?: Record<string, string>;
 }
 
-export const DiagnosisFormFactory: React.FC<DiagnosisFormFactoryProps> = ({
+export const DiagnosisFormFactory: React.FC<DiagnosisFormFactoryProps> = React.memo(({
   type,
   value,
   onChange,
@@ -32,14 +32,16 @@ export const DiagnosisFormFactory: React.FC<DiagnosisFormFactoryProps> = ({
     default:
       return null;
   }
-};
+});
+
+DiagnosisFormFactory.displayName = 'DiagnosisFormFactory';
 
 interface DiagnosisDisplayFactoryProps {
   type: DiagnosisType;
   details: DiagnosisDetails;
 }
 
-export const DiagnosisDisplayFactory: React.FC<DiagnosisDisplayFactoryProps> = ({
+export const DiagnosisDisplayFactory: React.FC<DiagnosisDisplayFactoryProps> = React.memo(({
   type,
   details,
 }) => {
@@ -49,4 +51,6 @@ export const DiagnosisDisplayFactory: React.FC<DiagnosisDisplayFactoryProps> = (
     default:
       return null;
   }
-};
+});
+
+DiagnosisDisplayFactory.displayName = 'DiagnosisDisplayFactory';
