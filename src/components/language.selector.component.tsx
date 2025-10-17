@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { 
   FormControl, 
   InputLabel, 
@@ -8,24 +8,24 @@ import {
 import type { SelectChangeEvent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-const LanguageSelector: React.FC = () => {
+const LanguageSelector: React.FC = React.memo(() => {
   const { i18n, t } = useTranslation();
 
-  const handleLanguageChange = (event: SelectChangeEvent<string>) => {
+  const handleLanguageChange = useCallback((event: SelectChangeEvent<string>) => {
     const newLanguage = event.target.value;
     i18n.changeLanguage(newLanguage);
-  };
+  }, [i18n]);
 
-  const languages = [
+  const languages = useMemo(() => [
     { code: 'en', label: t('languageSelector.english') },
     { code: 'hy', label: t('languageSelector.armenian') },
     { code: 'ka', label: t('languageSelector.georgian') },
     { code: 'de', label: t('languageSelector.german') },
     { code: 'ru', label: t('languageSelector.russian') }
-  ];
+  ], [t]);
 
   // Normalize the current language to base code (e.g., 'en-US' -> 'en')
-  const currentLanguage = i18n.language.split('-')[0];
+  const currentLanguage = useMemo(() => i18n.language.split('-')[0], [i18n.language]);
 
   return (
     <FormControl 
@@ -60,6 +60,8 @@ const LanguageSelector: React.FC = () => {
       </Select>
     </FormControl>
   );
-};
+});
+
+LanguageSelector.displayName = 'LanguageSelector';
 
 export default LanguageSelector;

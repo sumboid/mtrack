@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Typography, Chip, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { BreastCancer } from '../../models/diagnoses/breast.cancer';
@@ -11,16 +11,23 @@ interface BreastCancerDisplayProps {
   details: BreastCancer['details'];
 }
 
-export const BreastCancerDisplay: React.FC<BreastCancerDisplayProps> = ({ details }) => {
+export const BreastCancerDisplay: React.FC<BreastCancerDisplayProps> = React.memo(({ details }) => {
   const { t } = useTranslation();
 
-  const stage = details.stage || calculateStage(details.tnmT, details.tnmN, details.tnmM);
-  const subtype = details.subtype || calculateSubtype({
-    er: details.er,
-    pr: details.pr,
-    her2: details.her2,
-    ki67: details.ki67,
-  });
+  const stage = useMemo(() => 
+    details.stage || calculateStage(details.tnmT, details.tnmN, details.tnmM),
+    [details.stage, details.tnmT, details.tnmN, details.tnmM]
+  );
+
+  const subtype = useMemo(() => 
+    details.subtype || calculateSubtype({
+      er: details.er,
+      pr: details.pr,
+      her2: details.her2,
+      ki67: details.ki67,
+    }),
+    [details.subtype, details.er, details.pr, details.her2, details.ki67]
+  );
 
   return (
     <Box>
@@ -124,4 +131,6 @@ export const BreastCancerDisplay: React.FC<BreastCancerDisplayProps> = ({ detail
       </Grid>
     </Box>
   );
-};
+});
+
+BreastCancerDisplay.displayName = 'BreastCancerDisplay';

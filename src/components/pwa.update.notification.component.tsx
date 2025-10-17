@@ -1,6 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Snackbar, Button, Alert } from '@mui/material'
 import { useRegisterSW } from 'virtual:pwa-register/react'
+
+const anchorOrigin = { vertical: 'bottom', horizontal: 'center' } as const
+const alertSx = { width: '100%' } as const
 
 export function PWAUpdateNotification() {
   const [showReload, setShowReload] = useState(false)
@@ -28,15 +31,21 @@ export function PWAUpdateNotification() {
     }
   }, [needRefresh])
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOfflineReady(false)
     setNeedRefresh(false)
     setShowReload(false)
-  }
+  }, [setOfflineReady, setNeedRefresh])
 
-  const handleUpdate = () => {
+  const handleUpdate = useCallback(() => {
     updateServiceWorker(true)
-  }
+  }, [updateServiceWorker])
+
+  const updateButton = useMemo(() => (
+    <Button color="inherit" size="small" onClick={handleUpdate}>
+      Update
+    </Button>
+  ), [handleUpdate])
 
   return (
     <>
@@ -44,9 +53,9 @@ export function PWAUpdateNotification() {
         open={offlineReady}
         autoHideDuration={6000}
         onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={anchorOrigin}
       >
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+        <Alert onClose={handleClose} severity="success" sx={alertSx}>
           App is ready to work offline!
         </Alert>
       </Snackbar>
@@ -54,17 +63,13 @@ export function PWAUpdateNotification() {
       <Snackbar
         open={showReload}
         onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={anchorOrigin}
       >
         <Alert
           onClose={handleClose}
           severity="info"
-          action={
-            <Button color="inherit" size="small" onClick={handleUpdate}>
-              Update
-            </Button>
-          }
-          sx={{ width: '100%' }}
+          action={updateButton}
+          sx={alertSx}
         >
           New version available! Click Update to refresh.
         </Alert>

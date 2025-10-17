@@ -37,7 +37,7 @@ interface EditMedicalRecordDialogProps {
   onSubmit: (record: MedicalHistoryRecord) => void;
 }
 
-export const AddMedicalRecordDialog: React.FC<AddMedicalRecordDialogProps> = ({
+export const AddMedicalRecordDialog: React.FC<AddMedicalRecordDialogProps> = React.memo(({
   open,
   onClose,
   patientId,
@@ -72,9 +72,11 @@ export const AddMedicalRecordDialog: React.FC<AddMedicalRecordDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+});
 
-export const EditMedicalRecordDialog: React.FC<EditMedicalRecordDialogProps> = ({
+AddMedicalRecordDialog.displayName = 'AddMedicalRecordDialog';
+
+export const EditMedicalRecordDialog: React.FC<EditMedicalRecordDialogProps> = React.memo(({
   open,
   onClose,
   patientId,
@@ -110,4 +112,6 @@ export const EditMedicalRecordDialog: React.FC<EditMedicalRecordDialogProps> = (
       </DialogContent>
     </Dialog>
   );
-};
+});
+
+EditMedicalRecordDialog.displayName = 'EditMedicalRecordDialog';

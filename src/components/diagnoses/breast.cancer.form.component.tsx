@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   TextField,
   Grid,
@@ -24,28 +24,28 @@ interface BreastCancerFormProps {
   errors?: Partial<Record<keyof BreastCancer['details'], string>>;
 }
 
-export const BreastCancerForm: React.FC<BreastCancerFormProps> = ({
+export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
   value,
   onChange,
   errors = {},
 }) => {
   const { t } = useTranslation();
 
-  const handleChange = (field: keyof BreastCancer['details']) => 
+  const handleChange = useCallback((field: keyof BreastCancer['details']) => 
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { value: unknown } }) => {
       onChange({
         ...value,
         [field]: e.target.value,
       });
-    };
+    }, [value, onChange]);
 
-  const handleKi67Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleKi67Change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     onChange({
       ...value,
       ki67: val ? parseFloat(val) : undefined,
     });
-  };
+  }, [value, onChange]);
 
   return (
     <Box>
@@ -248,4 +248,6 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = ({
       </Grid>
     </Box>
   );
-};
+});
+
+BreastCancerForm.displayName = 'BreastCancerForm';

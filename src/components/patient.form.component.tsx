@@ -321,3 +321,5 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
     </Card>
   );
 });
+
+PatientForm.displayName = 'PatientForm';
