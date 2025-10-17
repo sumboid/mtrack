@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -24,7 +24,7 @@ interface EditPatientDialogProps {
   onSubmit: (patient: Patient) => void;
 }
 
-export const AddPatientDialog: React.FC<AddPatientDialogProps> = ({
+export const AddPatientDialog: React.FC<AddPatientDialogProps> = React.memo(({
   open,
   onClose,
   onSubmit,
@@ -58,9 +58,11 @@ export const AddPatientDialog: React.FC<AddPatientDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+});
 
-export const EditPatientDialog: React.FC<EditPatientDialogProps> = ({
+AddPatientDialog.displayName = 'AddPatientDialog';
+
+export const EditPatientDialog: React.FC<EditPatientDialogProps> = React.memo(({
   open,
   onClose,
   patient,
@@ -69,7 +71,7 @@ export const EditPatientDialog: React.FC<EditPatientDialogProps> = ({
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
-  const handleSubmit = React.useCallback((data: PatientData) => {
+  const handleSubmit = useCallback((data: PatientData) => {
     // Merge the data with the existing patient to preserve id and timestamps
     onSubmit({
       ...patient,
@@ -104,4 +106,6 @@ export const EditPatientDialog: React.FC<EditPatientDialogProps> = ({
       </DialogContent>
     </Dialog>
   );
-};
+});
+
+EditPatientDialog.displayName = 'EditPatientDialog';

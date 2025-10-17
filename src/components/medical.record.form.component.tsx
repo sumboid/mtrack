@@ -163,3 +163,5 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
     </BaseMedicalRecordForm>
   );
 });
+
+MedicalRecordForm.displayName = 'MedicalRecordForm';
