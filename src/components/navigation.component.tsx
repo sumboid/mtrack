@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -22,9 +22,12 @@ interface NavigationProps {
   toggleTheme: () => void;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
+const Navigation: React.FC<NavigationProps> = React.memo(({ mode, toggleTheme }) => {
   const { t } = useTranslation();
   const [backupOpen, setBackupOpen] = useState(false);
+
+  const handleBackupOpen = useCallback(() => setBackupOpen(true), []);
+  const handleBackupClose = useCallback(() => setBackupOpen(false), []);
 
   return (
     <AppBar 
@@ -61,7 +64,7 @@ const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
           <Tooltip title="Backup & Storage">
             <IconButton 
               color="inherit" 
-              onClick={() => setBackupOpen(true)}
+              onClick={handleBackupOpen}
               sx={{
                 color: 'primary.main',
                 '&:hover': {
@@ -89,9 +92,11 @@ const Navigation: React.FC<NavigationProps> = ({ mode, toggleTheme }) => {
           <LanguageSelector />
         </Box>
       </Toolbar>
-      <BackupDialog open={backupOpen} onClose={() => setBackupOpen(false)} />
+      <BackupDialog open={backupOpen} onClose={handleBackupClose} />
     </AppBar>
   );
-};
+});
+
+Navigation.displayName = 'Navigation';
 
 export default Navigation;

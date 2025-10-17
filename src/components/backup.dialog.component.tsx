@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import {
   Dialog,
   DialogTitle,
@@ -32,8 +32,9 @@ interface BackupDialogProps {
 const closeIconSx = { position: 'absolute', right: 8, top: 8 } as const
 const alertSx = { mb: 2 } as const
 const progressSx = { mb: 2 } as const
+const buttonSx = { minWidth: 120 } as const
 
-export function BackupDialog({ open, onClose }: BackupDialogProps) {
+export const BackupDialog = ({ open, onClose }: BackupDialogProps) => {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
   const [importing, setImporting] = useState(false)
@@ -78,6 +79,37 @@ export function BackupDialog({ open, onClose }: BackupDialogProps) {
 
   const handleCloseMessage = useCallback(() => setMessage(null), [])
 
+  // Memoize list items to prevent re-renders
+  const exportListItem = useMemo(() => (
+    <ListItem>
+      <ListItemIcon>
+        <DownloadIcon />
+      </ListItemIcon>
+      <ListItemText
+        primary={t('backup.export.title')}
+        secondary={t('backup.export.description')}
+      />
+      <Button variant="contained" onClick={handleExport} sx={buttonSx}>
+        {t('backup.export.button')}
+      </Button>
+    </ListItem>
+  ), [t, handleExport])
+
+  const importListItem = useMemo(() => (
+    <ListItem>
+      <ListItemIcon>
+        <UploadIcon />
+      </ListItemIcon>
+      <ListItemText
+        primary={t('backup.import.title')}
+        secondary={t('backup.import.description')}
+      />
+      <Button variant="contained" onClick={handleImport} disabled={importing} sx={buttonSx}>
+        {t('backup.import.button')}
+      </Button>
+    </ListItem>
+  ), [t, handleImport, importing])
+
   return (
     <Dialog 
       open={open} 
@@ -103,33 +135,9 @@ export function BackupDialog({ open, onClose }: BackupDialogProps) {
         {importing && <LinearProgress sx={progressSx} />}
 
         <List>
-          <ListItem>
-            <ListItemIcon>
-              <DownloadIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('backup.export.title')}
-              secondary={t('backup.export.description')}
-            />
-            <Button variant="contained" onClick={handleExport} sx={{ minWidth: 120 }}>
-              {t('backup.export.button')}
-            </Button>
-          </ListItem>
-
+          {exportListItem}
           <Divider />
-
-          <ListItem>
-            <ListItemIcon>
-              <UploadIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('backup.import.title')}
-              secondary={t('backup.import.description')}
-            />
-            <Button variant="contained" onClick={handleImport} disabled={importing} sx={{ minWidth: 120 }}>
-              {t('backup.import.button')}
-            </Button>
-          </ListItem>
+          {importListItem}
         </List>
       </DialogContent>
     </Dialog>
