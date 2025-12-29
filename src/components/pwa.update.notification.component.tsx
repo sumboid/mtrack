@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { Snackbar, Button, Alert } from '@mui/material'
+import { Snackbar, Alert, Button } from './mui'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 const anchorOrigin = { vertical: 'bottom', horizontal: 'center' } as const

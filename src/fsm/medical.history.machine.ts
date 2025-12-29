@@ -28,6 +28,9 @@ export interface MedicalHistoryContext {
   categoryFilter: MedicalRecordCategory | 'all';
   loading: boolean;
   error: string | null;
+  addDialogOpen: boolean;
+  editDialogOpen: boolean;
+  recordToEdit: MedicalHistoryRecord | null;
 }
 
 type MedicalHistoryEvent =
@@ -37,6 +40,10 @@ type MedicalHistoryEvent =
   | { type: 'DELETE_RECORD'; recordId: string }
   | { type: 'FILTER_BY_CATEGORY'; category: MedicalRecordCategory | 'all' }
   | { type: 'SELECT_RECORD'; record: MedicalHistoryRecord | null }
+  | { type: 'OPEN_ADD_DIALOG' }
+  | { type: 'CLOSE_ADD_DIALOG' }
+  | { type: 'OPEN_EDIT_DIALOG'; record: MedicalHistoryRecord }
+  | { type: 'CLOSE_EDIT_DIALOG' }
   | { type: 'RETRY' };
 
 export const getFilteredRecords = (context: MedicalHistoryContext): MedicalHistoryRecord[] => {
@@ -60,6 +67,9 @@ export const createMedicalHistoryMachine = (patientId: string) => createMachine(
     categoryFilter: 'all',
     loading: false,
     error: null,
+    addDialogOpen: false,
+    editDialogOpen: false,
+    recordToEdit: null,
   },
   states: {
     loading: {
@@ -96,6 +106,24 @@ export const createMedicalHistoryMachine = (patientId: string) => createMachine(
             selectedRecord: ({ event }) => event.record,
           }),
         },
+        OPEN_ADD_DIALOG: {
+          actions: assign({ addDialogOpen: true }),
+        },
+        CLOSE_ADD_DIALOG: {
+          actions: assign({ addDialogOpen: false }),
+        },
+        OPEN_EDIT_DIALOG: {
+          actions: assign({
+            editDialogOpen: true,
+            recordToEdit: ({ event }) => event.record,
+          }),
+        },
+        CLOSE_EDIT_DIALOG: {
+          actions: assign({
+            editDialogOpen: false,
+            recordToEdit: null,
+          }),
+        },
         ADD_POINT_RECORD: {
           actions: [
             ({ event }) => {
@@ -110,6 +138,7 @@ export const createMedicalHistoryMachine = (patientId: string) => createMachine(
                 const record = createPointRecord(event.params);
                 return [...context.records, record].sort((a, b) => a.date.getTime() - b.date.getTime());
               },
+              addDialogOpen: false,
             }),
           ],
         },
@@ -127,6 +156,7 @@ export const createMedicalHistoryMachine = (patientId: string) => createMachine(
                 const record = createContinuousRecord(event.params);
                 return [...context.records, record].sort((a, b) => a.date.getTime() - b.date.getTime());
               },
+              addDialogOpen: false,
             }),
           ],
         },
@@ -140,6 +170,8 @@ export const createMedicalHistoryMachine = (patientId: string) => createMachine(
                 context.records.map(r => r.id === event.record.id ? event.record : r),
               selectedRecord: ({ context, event }) =>
                 context.selectedRecord?.id === event.record.id ? event.record : context.selectedRecord,
+              editDialogOpen: false,
+              recordToEdit: null,
             }),
           ],
         },

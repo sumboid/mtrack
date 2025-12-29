@@ -1,4 +1,4 @@
-import { createMachine, assign, fromPromise } from 'xstate';
+import { createMachine, assign, fromPromise, sendParent } from 'xstate';
 import type { Patient } from '../models/patient.model';
 import { patientService } from '../services/patient.service';
 
@@ -7,6 +7,7 @@ export interface PatientContext {
   loading: boolean;
   error: string | null;
   searchQuery: string;
+  addDialogOpen: boolean;
 }
 
 type PatientEvent =
@@ -14,6 +15,8 @@ type PatientEvent =
   | { type: 'ADD_PATIENT'; patient: Patient }
   | { type: 'UPDATE_PATIENT'; patient: Patient }
   | { type: 'DELETE_PATIENT'; patientId: string }
+  | { type: 'OPEN_ADD_DIALOG' }
+  | { type: 'CLOSE_ADD_DIALOG' }
   | { type: 'RETRY' };
 
 export const patientMachine = createMachine({
@@ -28,6 +31,7 @@ export const patientMachine = createMachine({
     loading: false,
     error: null,
     searchQuery: '',
+    addDialogOpen: false,
   },
   states: {
     loading: {
@@ -61,6 +65,7 @@ export const patientMachine = createMachine({
           actions: [
             assign({
               patients: ({ context, event }) => [...context.patients, event.patient],
+              addDialogOpen: false,
             }),
             ({ event }) => {
               patientService.add(event.patient).catch(console.error);
@@ -89,7 +94,15 @@ export const patientMachine = createMachine({
             ({ event }) => {
               patientService.delete(event.patientId).catch(console.error);
             },
+            // Notify parent machine to clean up medical history actor
+            sendParent(({ event }) => ({ type: 'PATIENT_DELETED', patientId: event.patientId })),
           ],
+        },
+        OPEN_ADD_DIALOG: {
+          actions: assign({ addDialogOpen: true }),
+        },
+        CLOSE_ADD_DIALOG: {
+          actions: assign({ addDialogOpen: false }),
         },
       },
     },
@@ -102,13 +115,20 @@ export const patientMachine = createMachine({
       entry: assign({ loading: true }),
       invoke: {
         src: fromPromise(async ({ input }) => {
-          const { query } = input as { query: string };
-          return {
-            patients: await patientService.list(query),
-            query,
-          };
+          if (typeof input === 'object' && input !== null && 'query' in input) {
+            return {
+              patients: await patientService.list(String(input.query)),
+              query: String(input.query),
+            };
+          }
+          throw new Error('Invalid input');
         }),
-        input: ({ event }) => ({ query: (event as { type: 'SEARCH_PATIENTS'; query: string }).query }),
+        input: ({ event }) => {
+          if (event.type === 'SEARCH_PATIENTS') {
+            return { query: event.query };
+          }
+          return { query: '' };
+        },
         onDone: {
           target: 'success',
           actions: assign({
@@ -128,3 +148,7 @@ export const patientMachine = createMachine({
     },
   },
 });
+
+// No longer export singleton - root machine will spawn this
+// export const patientActor = createActor(patientMachine);
+// patientActor.start();

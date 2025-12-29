@@ -4,7 +4,7 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
-} from '@mui/material';
+} from './mui';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../hooks/useIsMobile';

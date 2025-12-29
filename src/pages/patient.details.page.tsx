@@ -11,7 +11,7 @@ import {
   Divider,
   Paper,
   List,
-} from '@mui/material';
+} from '../components/mui';
 import {
   ArrowBack as ArrowBackIcon,
   Person as PersonIcon,
@@ -22,9 +22,9 @@ import {
   Add as AddIcon,
   Edit as EditIcon,
 } from '@mui/icons-material';
-import { useActor, useMachine } from '@xstate/react';
-import { patientMachine } from '../fsm/list.machine';
-import { createMedicalHistoryMachine, type CreatePointRecordParams, type CreateContinuousRecordParams } from '../fsm/medical.history.machine';
+import { useSelector } from '@xstate/react';
+import { usePatientsActor, useMedicalHistoryActor } from '../contexts/app.actor.context';
+import { type CreatePointRecordParams, type CreateContinuousRecordParams } from '../fsm/medical.history.machine';
 import type { MedicalHistoryRecord, MedicalRecordCategory } from '../models/medical.history.model';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -55,41 +55,43 @@ const gridSpacing = 3;
 const treatmentSx = { mb: 1 };
 
 const PatientDetailsPage: React.FC = () => {
-  const [state] = useActor(patientMachine);
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { patientId } = useParams<{ patientId: string }>();
   
-  // Create machine for this patient - will auto-load on creation
-  const medicalHistoryMachine = React.useMemo(
-    () => patientId ? createMedicalHistoryMachine(patientId) : null,
-    [patientId]
+  // Get actors from root machine
+  const patientActor = usePatientsActor();
+  const medicalHistoryActor = useMedicalHistoryActor(patientId);
+  
+  // Optimize selector - only get the specific patient we need
+  const patient = useSelector(patientActor, (state) => 
+    state.context.patients.find(p => p.id === patientId)
   );
-  const [historyState, historySend] = useMachine(medicalHistoryMachine!);
-  const [addDialogOpen, setAddDialogOpen] = React.useState(false);
-  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-  const [recordToEdit, setRecordToEdit] = React.useState<MedicalHistoryRecord | null>(null);
-
-  const patient = React.useMemo(() => {
-    return state.context.patients.find(p => p.id === patientId);
-  }, [state.context.patients, patientId]);
+  
+  // Use specific selectors for medical history state
+  // useSelector accepts undefined, so convert null to undefined
+  const records = useSelector(medicalHistoryActor ?? undefined, (state) => state?.context.records ?? []);
+  const isAddDialogOpen = useSelector(medicalHistoryActor ?? undefined, (state) => state?.context.addDialogOpen ?? false);
+  const isEditDialogOpen = useSelector(medicalHistoryActor ?? undefined, (state) => state?.context.editDialogOpen ?? false);
+  const editingRecord = useSelector(medicalHistoryActor ?? undefined, (state) => state?.context.recordToEdit ?? null);
+  const isLoadingRecords = useSelector(medicalHistoryActor ?? undefined, (state) => state?.matches('loading') ?? false);
 
   const handleAddRecord = (data: CreatePointRecordParams | CreateContinuousRecordParams, keepDialogOpen?: boolean) => {
+    if (!medicalHistoryActor) return;
+    
     if ('startDate' in data && 'endDate' in data) {
-      historySend({ type: 'ADD_CONTINUOUS_RECORD', params: data as CreateContinuousRecordParams });
+      medicalHistoryActor.send({ type: 'ADD_CONTINUOUS_RECORD', params: data as CreateContinuousRecordParams });
     } else {
-      historySend({ type: 'ADD_POINT_RECORD', params: data as CreatePointRecordParams });
+      medicalHistoryActor.send({ type: 'ADD_POINT_RECORD', params: data as CreatePointRecordParams });
     }
-    // Only close dialog if not in "Save and Add Next" mode
-    if (!keepDialogOpen) {
-      setAddDialogOpen(false);
+    if (keepDialogOpen) {
+      medicalHistoryActor.send({ type: 'OPEN_ADD_DIALOG' });
     }
   };
 
   const handleUpdateRecord = (record: MedicalHistoryRecord) => {
-    historySend({ type: 'UPDATE_RECORD', record });
-    setEditDialogOpen(false);
-    setRecordToEdit(null);
+    if (!medicalHistoryActor) return;
+    medicalHistoryActor.send({ type: 'UPDATE_RECORD', record });
   };
 
   const formatDate = React.useCallback((date: Date | string) => {
@@ -108,14 +110,15 @@ const PatientDetailsPage: React.FC = () => {
     return age;
   }, []);
 
-  const handleEditRecord = React.useCallback((record: MedicalHistoryRecord) => {
-    setRecordToEdit(record);
-    setEditDialogOpen(true);
-  }, []);
+  const handleEditRecord = (record: MedicalHistoryRecord) => {
+    if (!medicalHistoryActor) return;
+    medicalHistoryActor.send({ type: 'OPEN_EDIT_DIALOG', record });
+  };
 
-  const handleDeleteRecord = React.useCallback((record: MedicalHistoryRecord) => {
-    historySend({ type: 'DELETE_RECORD', recordId: record.id });
-  }, [historySend]);
+  const handleDeleteRecord = (record: MedicalHistoryRecord) => {
+    if (!medicalHistoryActor) return;
+    medicalHistoryActor.send({ type: 'DELETE_RECORD', recordId: record.id });
+  };
 
   const formatDateTime = React.useCallback((date: Date) => {
     return date.toLocaleDateString();
@@ -320,42 +323,34 @@ const PatientDetailsPage: React.FC = () => {
   }, [t]);
 
   const sortedRecords = React.useMemo(() => 
-    [...historyState.context.records].sort((a, b) => b.date.getTime() - a.date.getTime()),
-    [historyState.context.records]
+    [...records].sort((a, b) => b.date.getTime() - a.date.getTime()),
+    [records]
   );
 
-  const handleBackToPatients = React.useCallback(() => {
+  const handleBackToPatients = () => {
     navigate('/');
-  }, [navigate]);
+  };
 
-  const handleEditPatient = React.useCallback(() => {
+  const handleEditPatient = () => {
     if (patient) {
       navigate(`/patient/${patient.id}/edit`);
     }
-  }, [navigate, patient]);
+  };
 
-  const handleOpenAddDialog = React.useCallback(() => {
-    setAddDialogOpen(true);
-  }, []);
+  const handleOpenAddDialog = () => {
+    if (!medicalHistoryActor) return;
+    medicalHistoryActor.send({ type: 'OPEN_ADD_DIALOG' });
+  };
 
-  const handleCloseAddDialog = React.useCallback(() => {
-    setAddDialogOpen(false);
-  }, []);
+  const handleCloseAddDialog = () => {
+    if (!medicalHistoryActor) return;
+    medicalHistoryActor.send({ type: 'CLOSE_ADD_DIALOG' });
+  };
 
-  const handleCloseEditDialog = React.useCallback(() => {
-    setEditDialogOpen(false);
-    setRecordToEdit(null);
-  }, []);
-  
-  if (state.matches('loading')) {
-    return (
-      <Container maxWidth="xl" sx={containerSx}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {t('patientDetails.loading')}
-        </Typography>
-      </Container>
-    );
-  }
+  const handleCloseEditDialog = () => {
+    if (!medicalHistoryActor) return;
+    medicalHistoryActor.send({ type: 'CLOSE_EDIT_DIALOG' });
+  };
 
   if (!patient) {
     return (
@@ -488,13 +483,13 @@ const PatientDetailsPage: React.FC = () => {
                 </Button>
               </Box>
 
-              {historyState.matches('loading') ? (
+              {isLoadingRecords ? (
                 <Paper elevation={0} sx={emptyStatePaperSx}>
                   <Typography variant="body1" color="text.secondary">
                     {t('patientDetails.loading')}
                   </Typography>
                 </Paper>
-              ) : historyState.context.records.length === 0 ? (
+              ) : records.length === 0 ? (
                 <Paper elevation={0} sx={emptyStatePaperSx}>
                   <Typography variant="body1" color="text.secondary">
                     {t('patientDetails.noMedicalRecords')}
@@ -533,19 +528,19 @@ const PatientDetailsPage: React.FC = () => {
       {patient && (
         <>
           <AddMedicalRecordDialog
-            open={addDialogOpen}
+            open={isAddDialogOpen}
             onClose={handleCloseAddDialog}
             patientId={patient.id}
             patientName={patient.name}
             onSubmit={handleAddRecord}
           />
-          {recordToEdit && (
+          {editingRecord && (
             <EditMedicalRecordDialog
-              open={editDialogOpen}
+              open={isEditDialogOpen}
               onClose={handleCloseEditDialog}
               patientId={patient.id}
               patientName={patient.name}
-              record={recordToEdit}
+              record={editingRecord}
               onSubmit={handleUpdateRecord}
             />
           )}

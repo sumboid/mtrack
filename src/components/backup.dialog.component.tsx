@@ -1,10 +1,9 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
+import { LinearProgress } from '@mui/material'
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  Button,
-  LinearProgress,
   Alert,
   IconButton,
   List,
@@ -12,21 +11,21 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-} from '@mui/material'
+  Button,
+} from './mui'
 import CloseIcon from '@mui/icons-material/Close'
 import DownloadIcon from '@mui/icons-material/Download'
 import UploadIcon from '@mui/icons-material/Upload'
 import { useTranslation } from 'react-i18next'
 import { useIsMobile } from '../hooks/useIsMobile'
-import {
-  exportDataToJSON,
-  importDataFromJSON,
-  downloadBackup
-} from '../services/backup.service'
+import type { ActorRefFrom } from 'xstate'
+import type { backupMachine, BackupEvent } from '../fsm/backup.machine'
 
 interface BackupDialogProps {
   open: boolean
   onClose: () => void
+  backupState: { context: { importing: boolean; message: { type: 'success' | 'error'; text: string } | null } }
+  backupSend: (event: BackupEvent) => void
 }
 
 const closeIconSx = { position: 'absolute', right: 8, top: 8 } as const
@@ -34,50 +33,27 @@ const alertSx = { mb: 2 } as const
 const progressSx = { mb: 2 } as const
 const buttonSx = { minWidth: 120 } as const
 
-export const BackupDialog = ({ open, onClose }: BackupDialogProps) => {
+export const BackupDialog = ({ open, onClose, backupState, backupSend }: BackupDialogProps) => {
   const { t } = useTranslation()
   const isMobile = useIsMobile()
-  const [importing, setImporting] = useState(false)
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
 
-  const handleExport = useCallback(async () => {
-    try {
-      const jsonData = await exportDataToJSON()
-      downloadBackup(jsonData)
-      setMessage({ type: 'success', text: t('backup.export.success') })
-    } catch (error) {
-      setMessage({ type: 'error', text: t('backup.export.errorFailed') })
-    }
-  }, [t])
+  const handleExport = useCallback(() => {
+    backupSend({ type: 'EXPORT' })
+  }, [backupSend])
 
   const handleImport = useCallback(() => {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = '.json'
     input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
+      const file = e.target instanceof HTMLInputElement ? e.target.files?.[0] : undefined
       if (!file) return
-
-      setImporting(true)
-      try {
-        const text = await file.text()
-        const result = await importDataFromJSON(text)
-        
-        if (result.success) {
-          setMessage({ type: 'success', text: t('backup.import.success') })
-        } else {
-          setMessage({ type: 'error', text: result.error || t('backup.import.errorFailed') })
-        }
-      } catch (error) {
-        setMessage({ type: 'error', text: t('backup.import.errorRead') })
-      } finally {
-        setImporting(false)
-      }
+      backupSend({ type: 'IMPORT', file })
     }
     input.click()
-  }, [t])
+  }, [backupSend])
 
-  const handleCloseMessage = useCallback(() => setMessage(null), [])
+  const handleCloseMessage = useCallback(() => backupSend({ type: 'DISMISS_MESSAGE' }), [backupSend])
 
   // Memoize list items to prevent re-renders
   const exportListItem = useMemo(() => (
@@ -104,11 +80,11 @@ export const BackupDialog = ({ open, onClose }: BackupDialogProps) => {
         primary={t('backup.import.title')}
         secondary={t('backup.import.description')}
       />
-      <Button variant="contained" onClick={handleImport} disabled={importing} sx={buttonSx}>
+      <Button variant="contained" onClick={handleImport} disabled={backupState.context.importing} sx={buttonSx}>
         {t('backup.import.button')}
       </Button>
     </ListItem>
-  ), [t, handleImport, importing])
+  ), [t, handleImport, backupState.context.importing])
 
   return (
     <Dialog 
@@ -126,13 +102,13 @@ export const BackupDialog = ({ open, onClose }: BackupDialogProps) => {
       </DialogTitle>
       
       <DialogContent>
-        {message && (
-          <Alert severity={message.type} sx={alertSx} onClose={handleCloseMessage}>
-            {message.text}
+        {backupState.context.message && (
+          <Alert severity={backupState.context.message.type} sx={alertSx} onClose={handleCloseMessage}>
+            {t(backupState.context.message.text)}
           </Alert>
         )}
 
-        {importing && <LinearProgress sx={progressSx} />}
+        {backupState.context.importing && <LinearProgress sx={progressSx} />}
 
         <List>
           {exportListItem}

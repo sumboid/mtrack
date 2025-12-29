@@ -3,12 +3,12 @@ import {
   Container,
   Button,
   Typography,
-} from '@mui/material';
+} from '../components/mui';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useActor } from '@xstate/react';
-import { patientMachine } from '../fsm/list.machine';
+import { useSelector } from '@xstate/react';
+import { usePatientsActor } from '../contexts/app.actor.context';
 import { PatientForm } from '../components/patient.form.component';
 import type { PatientData } from '../models/patient.model';
 
@@ -16,7 +16,8 @@ const EditPatientPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { patientId } = useParams<{ patientId: string }>();
-  const [state, send] = useActor(patientMachine);
+  const patientActor = usePatientsActor();
+  const state = useSelector(patientActor, (state) => state);
 
   const patient = React.useMemo(() => {
     return state.context.patients.find(p => p.id === patientId);
@@ -31,9 +32,9 @@ const EditPatientPage: React.FC = () => {
       updatedAt: new Date(),
     };
 
-    send({ type: 'UPDATE_PATIENT', patient: updatedPatient });
+    patientActor.send({ type: 'UPDATE_PATIENT', patient: updatedPatient });
     navigate(`/patient/${patientId}`);
-  }, [patient, send, navigate, patientId]);
+  }, [patient, navigate, patientId]);
 
   const handleCancel = React.useCallback(() => {
     navigate(`/patient/${patientId}`);

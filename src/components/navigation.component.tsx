@@ -1,12 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { AppBar } from '@mui/material';
 import {
-  AppBar,
   Toolbar,
   Typography,
   Box,
   IconButton,
   Tooltip,
-} from '@mui/material';
+} from './mui';
 import {
   MedicalServices as MedicalIcon,
   LightMode as LightModeIcon,
@@ -14,6 +14,8 @@ import {
   Backup as BackupIcon,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useMachine } from '@xstate/react';
+import { backupMachine } from '../fsm/backup.machine';
 import LanguageSelector from './language.selector.component';
 import { BackupDialog } from './backup.dialog.component';
 
@@ -24,10 +26,10 @@ interface NavigationProps {
 
 const Navigation: React.FC<NavigationProps> = React.memo(({ mode, toggleTheme }) => {
   const { t } = useTranslation();
-  const [backupOpen, setBackupOpen] = useState(false);
+  const [backupState, backupSend] = useMachine(backupMachine);
 
-  const handleBackupOpen = useCallback(() => setBackupOpen(true), []);
-  const handleBackupClose = useCallback(() => setBackupOpen(false), []);
+  const handleBackupOpen = useCallback(() => backupSend({ type: 'OPEN_DIALOG' }), [backupSend]);
+  const handleBackupClose = useCallback(() => backupSend({ type: 'CLOSE_DIALOG' }), [backupSend]);
 
   return (
     <AppBar 
@@ -92,7 +94,12 @@ const Navigation: React.FC<NavigationProps> = React.memo(({ mode, toggleTheme })
           <LanguageSelector />
         </Box>
       </Toolbar>
-      <BackupDialog open={backupOpen} onClose={handleBackupClose} />
+      <BackupDialog 
+        open={backupState.context.dialogOpen} 
+        onClose={handleBackupClose}
+        backupState={backupState}
+        backupSend={backupSend}
+      />
     </AppBar>
   );
 });

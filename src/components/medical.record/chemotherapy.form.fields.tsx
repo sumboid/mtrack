@@ -1,13 +1,13 @@
 import React from 'react';
-import { Grid, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { ChemotherapyFields } from '../../models/medical.history.model';
+import { TextField, FormControl, InputLabel, Select, Grid, MenuItem } from '../mui';
 
 const halfWidthGridSize = { xs: 12, md: 6 };
 
 export interface ChemotherapyFormFieldsProps {
   value: ChemotherapyFields;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
 }
 
 export const ChemotherapyFormFields: React.FC<ChemotherapyFormFieldsProps> = ({ value, onChange }) => {
@@ -19,12 +19,15 @@ export const ChemotherapyFormFields: React.FC<ChemotherapyFormFieldsProps> = ({ 
   );
 
   const handleCyclesChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => onChange('cycles', parseInt(e.target.value) || ''),
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value === '' ? undefined : Number(e.target.value);
+      onChange('cycles', value);
+    },
     [onChange]
   );
 
   const handleResponseChange = React.useCallback(
-    (e: any) => onChange('response', e.target.value),
+    (e: { target: { value: unknown } }) => onChange('response', e.target.value),
     [onChange]
   );
 
@@ -49,8 +52,9 @@ export const ChemotherapyFormFields: React.FC<ChemotherapyFormFieldsProps> = ({ 
           type="number"
           label={t('addRecord.cycles')}
           value={value.cycles || ''}
-          onChange={handleCyclesChange}
-        />
+          onChange={handleCyclesChange}          slotProps={{
+            htmlInput: { min: 0, step: 1 }
+          }}        />
       </Grid>
       <Grid size={halfWidthGridSize}>
         <FormControl fullWidth>

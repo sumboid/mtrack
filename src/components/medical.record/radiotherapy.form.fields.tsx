@@ -1,11 +1,11 @@
 import React from 'react';
-import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { RadiotherapyFields } from '../../models/medical.history.model';
+import { Grid, TextField } from '../mui';
 
 export interface RadiotherapyFormFieldsProps {
   value: RadiotherapyFields;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
 }
 
 const halfWidthGridSize = { xs: 12, sm: 6 };
@@ -23,12 +23,18 @@ export const RadiotherapyFormFields: React.FC<RadiotherapyFormFieldsProps> = ({
   );
 
   const handleTotalDoseChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => onChange('totalDose', e.target.value),
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value === '' ? undefined : Number(e.target.value);
+      onChange('totalDose', value);
+    },
     [onChange]
   );
 
   const handleFractionsChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => onChange('fractions', e.target.value),
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value === '' ? undefined : Number(e.target.value);
+      onChange('fractions', value);
+    },
     [onChange]
   );
 
@@ -56,18 +62,26 @@ export const RadiotherapyFormFields: React.FC<RadiotherapyFormFieldsProps> = ({
       <Grid size={halfWidthGridSize}>
         <TextField
           fullWidth
-          label={t('addRecord.totalDose')}
-          value={value.totalDose || ''}
+          type="number"
+          label={t('medicalRecord.radiotherapy.totalDose')}
+          value={value.totalDose ?? ''}
           onChange={handleTotalDoseChange}
+          slotProps={{
+            htmlInput: { min: 0, step: 0.1 }
+          }}
         />
       </Grid>
 
       <Grid size={halfWidthGridSize}>
         <TextField
           fullWidth
-          label={t('addRecord.fractions')}
-          value={value.fractions || ''}
+          type="number"
+          label={t('medicalRecord.radiotherapy.fractions')}
+          value={value.fractions ?? ''}
           onChange={handleFractionsChange}
+          slotProps={{
+            htmlInput: { min: 0, step: 1 }
+          }}
         />
       </Grid>
 

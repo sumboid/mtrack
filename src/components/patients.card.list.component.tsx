@@ -6,7 +6,7 @@ import {
   Typography,
   Box,
   Stack,
-} from '@mui/material';
+} from './mui';
 import {
   Person as PersonIcon,
   Email as EmailIcon,

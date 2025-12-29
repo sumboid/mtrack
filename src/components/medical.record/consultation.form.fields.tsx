@@ -1,11 +1,11 @@
 import React from 'react';
-import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { ConsultationFields } from '../../models/medical.history.model';
+import { Grid, TextField } from '../mui';
 
 export interface ConsultationFormFieldsProps {
   value: ConsultationFields;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
 }
 
 const halfWidthGridSize = { xs: 12, sm: 6 };

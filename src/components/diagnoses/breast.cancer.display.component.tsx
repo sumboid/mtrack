@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, Chip, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { BreastCancer } from '../../models/diagnoses/breast.cancer';
 import { calculateSubtype, calculateStage } from '../../wizard/models/breast.cancer.wizard.model';
+import { Box, Typography, Chip, Grid } from '../mui';
 
 const gridSpacing = 1;
 const fullWidthGridSize = { xs: 12 };

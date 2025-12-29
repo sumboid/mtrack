@@ -3,36 +3,29 @@ import {
   Typography,
   Card,
   CardContent,
-  Button,
-  TextField,
   Box,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
   Divider,
-} from '@mui/material';
+} from './mui';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { Save as SaveIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useMachine, useSelector } from '@xstate/react';
 import type { Patient, PatientData } from '../models/patient.model';
-import { DiagnosisFormFactory, type DiagnosisType } from './diagnoses/diagnosis.factory.component';
-import type { BreastCancer } from '../models/diagnoses/breast.cancer';
+import { DiagnosisFormFactory } from './diagnoses/diagnosis.factory.component';
+import { TextField, Button, FormControl, InputLabel, Select, Grid } from './mui';
+import { createPatientFormMachine } from '../fsm/patient.form.machine';
 
-// Static styles
 const cardContentSx = { mb: 3 };
 const buttonContainerSx = { display: 'flex', gap: 2, justifyContent: 'flex-end' };
 const formContainerSx = { width: '100%', ml: 0 }; // Prevent Grid negative margins from causing overflow
 
-// Static Grid sizes
 const fullWidthGridSize = { xs: 12 };
 const halfWidthGridSize = { xs: 12, md: 6 };
 
-// Static spacing
 const gridSpacing = 3;
 
 interface PatientFormProps {
@@ -52,134 +45,100 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
 }) => {
   const { t } = useTranslation();
 
-  const [name, setName] = React.useState(() => patient?.name || '');
-  const [email, setEmail] = React.useState(() => patient?.email || '');
-  const [phone, setPhone] = React.useState(() => patient?.phone || '');
-  const [dateOfBirth, setDateOfBirth] = React.useState(() => 
-    patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : dayjs()
+  const machine = React.useMemo(() => createPatientFormMachine(), []);
+  const [state, send] = useMachine(machine);
+  
+  // Initialize form when mode or patient changes
+  React.useEffect(() => {
+    send({ type: 'INITIALIZE', mode, patient });
+  }, [mode, patient, send]);
+  
+  // Type guard to check if ref is valid ActorRef
+  const isActorRef = (ref: unknown): boolean => {
+    return ref !== null && ref !== undefined && typeof ref === 'object' && 'subscribe' in ref && 'getSnapshot' in ref;
+  };
+  
+  // Always call useSelector (Rules of Hooks), but pass undefined if ref is invalid
+  const isValidRef = isActorRef(state.context.diagnosisConfigRef);
+  const diagnosisState = useSelector(
+    isValidRef ? (state.context.diagnosisConfigRef as Parameters<typeof useSelector>[0]) : undefined,
+    (snapshot) => snapshot
   );
-  const [diagnosisType, setDiagnosisType] = React.useState<DiagnosisType>(() => 
-    patient?.diagnosis?.diagnosis || 'breast-cancer'
-  );
-  const [diagnosisDetails, setDiagnosisDetails] = React.useState<BreastCancer['details']>(() => 
-    patient?.diagnosis?.diagnosis === 'breast-cancer' 
-      ? patient.diagnosis.details 
-      : {
-          localization: 'left',
-          tnmT: 'T1',
-          tnmN: 'N0',
-          tnmM: 'M0',
-          metastaticStatus: 'early',
-          tumorType: 'invasive-nst',
-          er: '0',
-          pr: '0',
-          her2: '0',
-          grade: 'G2',
-        }
-  );
-  const [notes, setNotes] = React.useState(() => patient?.notes || '');
-
-  const [errors, setErrors] = React.useState<Partial<Record<keyof PatientData, string>>>({});
-
-  const clearError = React.useCallback((field: keyof PatientData) => {
-    setErrors(prev => {
-      if (prev[field]) {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      }
-      return prev;
-    });
-  }, []);
-
-  const handleNameChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-    clearError('name');
-  }, [clearError]);
-
-  const handleEmailChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    clearError('email');
-  }, [clearError]);
-
-  const handlePhoneChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
-    clearError('phone');
-  }, [clearError]);
-
-  const handleDateOfBirthChange = React.useCallback((newValue: dayjs.Dayjs | null) => {
-    if (newValue) {
-      setDateOfBirth(newValue);
+  
+  // Extract diagnosis type and breast cancer form ref safely
+  const getDiagnosisType = (): 'breast-cancer' => {
+    if (!diagnosisState || typeof diagnosisState !== 'object' || !('context' in diagnosisState)) {
+      return 'breast-cancer';
     }
-  }, []);
-
-  const handleDiagnosisTypeChange = React.useCallback((e: { target: { value: unknown } }) => {
-    setDiagnosisType(e.target.value as DiagnosisType);
-    setDiagnosisDetails({
-      localization: 'left',
-      tnmT: 'T1',
-      tnmN: 'N0',
-      tnmM: 'M0',
-      metastaticStatus: 'early',
-      tumorType: 'invasive-nst',
-      er: '0',
-      pr: '0',
-      her2: '0',
-      grade: 'G2',
-    });
-  }, []);
-
-  const handleDiagnosisDetailsChange = React.useCallback((value: BreastCancer['details']) => {
-    setDiagnosisDetails(value);
-  }, []);
-
-  const handleNotesChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setNotes(e.target.value);
-  }, []);
-
-  const validate = React.useCallback((): boolean => {
-    const newErrors: Partial<Record<keyof PatientData, string>> = {};
-
-    if (!name.trim()) {
-      newErrors.name = t('patient.form.nameRequired');
+    const ctx = diagnosisState.context;
+    if (ctx && typeof ctx === 'object' && 'type' in ctx && ctx.type === 'breast-cancer') {
+      return 'breast-cancer';
     }
-
-    if (!email.trim()) {
-      newErrors.email = t('patient.form.emailRequired');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = t('patient.form.emailInvalid');
+    return 'breast-cancer';
+  };
+  
+  const getBreastCancerFormRef = (): unknown => {
+    if (!diagnosisState || typeof diagnosisState !== 'object' || !('context' in diagnosisState)) {
+      return undefined;
     }
-
-    if (!phone.trim()) {
-      newErrors.phone = t('patient.form.phoneRequired');
-    } else if (phone.length < 7 || phone.length > 15) {
-      newErrors.phone = t('patient.form.phoneInvalid');
+    const ctx = diagnosisState.context;
+    if (ctx && typeof ctx === 'object' && 'breastCancerFormRef' in ctx) {
+      const ref = (ctx as Record<string, unknown>).breastCancerFormRef;
+      return isActorRef(ref) ? ref : undefined;
     }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [name, email, phone, t]);
+    return undefined;
+  };
+  
+  const diagnosisType = getDiagnosisType();
+  const breastCancerFormRef = getBreastCancerFormRef();
 
   const handleSubmit = React.useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    send({ type: 'SUBMIT' });
+  }, [send]);
 
-    if (!validate()) {
-      return;
+  const handleNameChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    send({ type: 'CHANGE', field: 'name', value: e.target.value });
+  }, [send]);
+
+  const handleEmailChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    send({ type: 'CHANGE', field: 'email', value: e.target.value });
+  }, [send]);
+
+  const handlePhoneChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    send({ type: 'CHANGE', field: 'phone', value: e.target.value });
+  }, [send]);
+
+  const handleDateOfBirthChange = React.useCallback((newValue: dayjs.Dayjs | null) => {
+    if (newValue) {
+      send({ type: 'CHANGE', field: 'dateOfBirth', value: newValue });
     }
+  }, [send]);
 
-    const diagnosis = diagnosisType === 'breast-cancer' 
-      ? { diagnosis: 'breast-cancer' as const, details: diagnosisDetails }
-      : { diagnosis: 'breast-cancer' as const, details: diagnosisDetails };
+  const handleDiagnosisTypeChange = React.useCallback((e: { target: { value: unknown } }) => {
+    const value = String(e.target.value);
+    if (value === 'breast-cancer') {
+      send({ type: 'CHANGE_DIAGNOSIS_TYPE', value });
+    }
+  }, [send]);
 
-    onSubmit({ 
-      name, 
-      email, 
-      phone, 
-      dateOfBirth: dateOfBirth.toDate(), 
-      diagnosis, 
-      notes 
-    });
-  }, [name, email, phone, dateOfBirth, diagnosisType, diagnosisDetails, notes, onSubmit, validate]);
+  const handleNotesChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    send({ type: 'CHANGE', field: 'notes', value: e.target.value });
+  }, [send]);
+
+  const wasSubmittedRef = React.useRef(false);
+
+  React.useEffect(() => {
+    // Check for output in idle state (submitted state transitions too fast to catch)
+    if (state.matches('idle') && state.context.output && !wasSubmittedRef.current) {
+      wasSubmittedRef.current = true;
+      // Blur active element to prevent aria-hidden warning when dialog closes
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      onSubmit(state.context.output);
+    }
+  }, [state, onSubmit]);
 
   // Memoize conditional translations
   const titleText = React.useMemo(() => 
@@ -200,10 +159,8 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
             fullWidth
             required
             label={t('patient.form.name')}
-            value={name}
+            value={state.context.name}
             onChange={handleNameChange}
-            error={!!errors.name}
-            helperText={errors.name}
           />
         </Grid>
 
@@ -213,10 +170,8 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
             required
             type="email"
             label={t('patient.form.email')}
-            value={email}
+            value={state.context.email}
             onChange={handleEmailChange}
-            error={!!errors.email}
-            helperText={errors.email}
           />
         </Grid>
 
@@ -225,10 +180,8 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
             fullWidth
             required
             label={t('patient.form.phone')}
-            value={phone}
+            value={state.context.phone}
             onChange={handlePhoneChange}
-            error={!!errors.phone}
-            helperText={errors.phone}
           />
         </Grid>
 
@@ -236,7 +189,7 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               label={t('patient.form.dateOfBirth')}
-              value={dateOfBirth}
+              value={state.context.dateOfBirth}
               onChange={handleDateOfBirthChange}
               slotProps={{
                 textField: {
@@ -265,9 +218,7 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
           <Divider sx={{ my: 2 }} />
           <DiagnosisFormFactory
             type={diagnosisType}
-            value={diagnosisDetails}
-            onChange={handleDiagnosisDetailsChange}
-            errors={{}}
+            breastCancerFormRef={isActorRef(breastCancerFormRef) ? breastCancerFormRef as Parameters<typeof DiagnosisFormFactory>[0]['breastCancerFormRef'] : undefined}
           />
         </Grid>
 
@@ -275,7 +226,7 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
           <TextField
             fullWidth
             label={t('patient.form.notes')}
-            value={notes}
+            value={state.context.notes}
             onChange={handleNotesChange}
             multiline
             rows={3}

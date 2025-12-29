@@ -2,12 +2,11 @@ import React from 'react';
 import {
   Container,
   Button,
-} from '@mui/material';
+} from '../components/mui';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useActor } from '@xstate/react';
-import { patientMachine } from '../fsm/list.machine';
+import { usePatientsActor } from '../contexts/app.actor.context';
 import { PatientForm } from '../components/patient.form.component';
 import { createPatient } from '../models/patient.model';
 import type { PatientData } from '../models/patient.model';
@@ -15,13 +14,13 @@ import type { PatientData } from '../models/patient.model';
 const AddPatientPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [, send] = useActor(patientMachine);
+  const patientActor = usePatientsActor();
 
   const handleSubmit = React.useCallback((data: PatientData) => {
     const patient = createPatient(data);
-    send({ type: 'ADD_PATIENT', patient });
+    patientActor.send({ type: 'ADD_PATIENT', patient });
     navigate('/');
-  }, [send, navigate]);
+  }, [navigate]);
 
   const handleCancel = React.useCallback(() => {
     navigate('/');

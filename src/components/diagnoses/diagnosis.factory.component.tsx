@@ -1,7 +1,9 @@
 import React from 'react';
+import type { ActorRefFrom } from 'xstate';
 import { BreastCancerForm } from './breast.cancer.form.component';
 import { BreastCancerDisplay } from './breast.cancer.display.component';
 import type { BreastCancer } from '../../models/diagnoses/breast.cancer';
+import { createBreastCancerFormMachine } from '../../fsm/breast.cancer.form.machine';
 
 export type DiagnosisType = 'breast-cancer';
 
@@ -9,26 +11,18 @@ export type DiagnosisDetails = BreastCancer['details'];
 
 interface DiagnosisFormFactoryProps {
   type: DiagnosisType;
-  value: DiagnosisDetails;
-  onChange: (value: DiagnosisDetails) => void;
-  errors?: Record<string, string>;
+  breastCancerFormRef?: ActorRefFrom<ReturnType<typeof createBreastCancerFormMachine>>;
 }
 
 export const DiagnosisFormFactory: React.FC<DiagnosisFormFactoryProps> = React.memo(({
   type,
-  value,
-  onChange,
-  errors,
+  breastCancerFormRef,
 }) => {
+  if (!breastCancerFormRef) return null;
+  
   switch (type) {
     case 'breast-cancer':
-      return (
-        <BreastCancerForm
-          value={value as BreastCancer['details']}
-          onChange={onChange as (value: BreastCancer['details']) => void}
-          errors={errors}
-        />
-      );
+      return <BreastCancerForm actorRef={breastCancerFormRef} />;
     default:
       return null;
   }
@@ -47,7 +41,7 @@ export const DiagnosisDisplayFactory: React.FC<DiagnosisDisplayFactoryProps> = R
 }) => {
   switch (type) {
     case 'breast-cancer':
-      return <BreastCancerDisplay details={details as BreastCancer['details']} />;
+      return <BreastCancerDisplay details={details} />;
     default:
       return null;
   }

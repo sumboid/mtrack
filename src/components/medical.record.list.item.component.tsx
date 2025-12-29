@@ -7,7 +7,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
-} from '@mui/material';
+} from './mui';
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,

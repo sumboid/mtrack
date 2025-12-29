@@ -1,18 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem
-} from '@mui/material';
-import type { SelectChangeEvent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { FormControl, InputLabel, Select, MenuItem } from './mui';
 
 const LanguageSelector: React.FC = React.memo(() => {
   const { i18n, t } = useTranslation();
 
-  const handleLanguageChange = useCallback((event: SelectChangeEvent<string>) => {
-    const newLanguage = event.target.value;
+  const handleLanguageChange = useCallback((event: { target: { value: unknown } }) => {
+    const newLanguage = String(event.target.value);
     i18n.changeLanguage(newLanguage);
   }, [i18n]);
 

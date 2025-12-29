@@ -99,11 +99,11 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
     setCategoryFields({});
   }, []);
 
-  const handleCategoryFieldChange = React.useCallback((field: string, value: any) => {
+  const handleCategoryFieldChange = React.useCallback((field: string, value: unknown) => {
     setCategoryFields(prev => ({ ...prev, [field]: value }));
   }, []);
 
-  const handleFormSubmit = React.useCallback((formData: any) => {
+  const handleFormSubmit = React.useCallback((formData: Record<string, unknown>) => {
     if (mode === 'edit' && record) {
       const updatedRecord: MedicalHistoryRecord = {
         ...record,
@@ -134,7 +134,7 @@ export const MedicalRecordForm: React.FC<MedicalRecordFormProps> = React.memo(({
         notes: formData.notes,
       };
       
-      onSubmit(recordData, saveAndAddNext);
+      onSubmit(recordData as CreatePointRecordParams | CreateContinuousRecordParams, saveAndAddNext);
       
       if (saveAndAddNext) {
         setCategoryFields({});

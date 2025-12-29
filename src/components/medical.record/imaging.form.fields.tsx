@@ -1,11 +1,11 @@
 import React from 'react';
-import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { ImagingFields } from '../../models/medical.history.model';
+import { Grid, TextField } from '../mui';
 
 export interface ImagingFormFieldsProps {
   value: ImagingFields;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
 }
 
 const halfWidthGridSize = { xs: 12, sm: 6 };

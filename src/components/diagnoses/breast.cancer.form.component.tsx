@@ -1,16 +1,10 @@
 import React, { useCallback } from 'react';
-import {
-  TextField,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Typography,
-  Box,
-} from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from '@xstate/react';
+import type { ActorRefFrom } from 'xstate';
 import type { BreastCancer } from '../../models/diagnoses/breast.cancer';
+import { type BreastCancerFormMachine } from '../../fsm/breast.cancer.form.machine';
+import { TextField, Grid, FormControl, InputLabel, Select, MenuItem, Typography, Box } from '../mui';
 
 const gridSpacing = 2;
 const fullWidthGridSize = { xs: 12 };
@@ -19,33 +13,27 @@ const thirdWidthGridSize = { xs: 12, sm: 4 };
 const gridContainerSx = { width: '100%', ml: 0 }; // Prevent negative margins overflow
 
 interface BreastCancerFormProps {
-  value: BreastCancer['details'];
-  onChange: (value: BreastCancer['details']) => void;
-  errors?: Partial<Record<keyof BreastCancer['details'], string>>;
+  actorRef: ActorRefFrom<BreastCancerFormMachine>;
 }
 
 export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
-  value,
-  onChange,
-  errors = {},
+  actorRef,
 }) => {
   const { t } = useTranslation();
+  const value = useSelector(actorRef, (snapshot) => snapshot.context);
 
   const handleChange = useCallback((field: keyof BreastCancer['details']) => 
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { value: unknown } }) => {
-      onChange({
-        ...value,
-        [field]: e.target.value,
-      });
-    }, [value, onChange]);
+      actorRef.send({ type: 'CHANGE', field, value: e.target.value as string | number | undefined });
+    }, [actorRef]);
 
   const handleKi67Change = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    onChange({
-      ...value,
-      ki67: val ? parseFloat(val) : undefined,
+    actorRef.send({ 
+      type: 'CHANGE_KI67', 
+      value: val ? parseFloat(val) : undefined,
     });
-  }, [value, onChange]);
+  }, [actorRef]);
 
   return (
     <Box>
@@ -55,7 +43,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
       
       <Grid container spacing={gridSpacing} sx={gridContainerSx}>
         <Grid size={halfWidthGridSize}>
-          <FormControl fullWidth error={!!errors.localization}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.localization')}</InputLabel>
             <Select
               value={value.localization || ''}
@@ -70,7 +58,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={halfWidthGridSize}>
-          <FormControl fullWidth error={!!errors.metastaticStatus}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.metastaticStatus')}</InputLabel>
             <Select
               value={value.metastaticStatus || ''}
@@ -90,7 +78,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.tnmT}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.tnmT')}</InputLabel>
             <Select
               value={value.tnmT || ''}
@@ -105,7 +93,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.tnmN}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.tnmN')}</InputLabel>
             <Select
               value={value.tnmN || ''}
@@ -120,7 +108,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.tnmM}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.tnmM')}</InputLabel>
             <Select
               value={value.tnmM || ''}
@@ -140,7 +128,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={halfWidthGridSize}>
-          <FormControl fullWidth error={!!errors.tumorType}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.tumorType')}</InputLabel>
             <Select
               value={value.tumorType || ''}
@@ -166,7 +154,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         )}
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.grade}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.grade')}</InputLabel>
             <Select
               value={value.grade || ''}
@@ -187,7 +175,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.er}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.er')}</InputLabel>
             <Select
               value={value.er || ''}
@@ -202,7 +190,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.pr}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.pr')}</InputLabel>
             <Select
               value={value.pr || ''}
@@ -217,7 +205,7 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
         </Grid>
 
         <Grid size={thirdWidthGridSize}>
-          <FormControl fullWidth error={!!errors.her2}>
+          <FormControl fullWidth>
             <InputLabel>{t('diagnosis.breastCancer.her2')}</InputLabel>
             <Select
               value={value.her2 || ''}
@@ -241,8 +229,6 @@ export const BreastCancerForm: React.FC<BreastCancerFormProps> = React.memo(({
             value={value.ki67 ?? ''}
             onChange={handleKi67Change}
             inputProps={{ min: 0, max: 100, step: 0.1 }}
-            error={!!errors.ki67}
-            helperText={errors.ki67}
           />
         </Grid>
       </Grid>

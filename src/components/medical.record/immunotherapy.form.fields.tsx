@@ -1,11 +1,11 @@
 import React from 'react';
-import { TextField, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { ImmunotherapyFields } from '../../models/medical.history.model';
+import { TextField, FormControl, InputLabel, Select, Grid, MenuItem } from '../mui';
 
 export interface ImmunotherapyFormFieldsProps {
   value: ImmunotherapyFields;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
 }
 
 const halfWidthGridSize = { xs: 12, sm: 6 };
@@ -23,7 +23,7 @@ export const ImmunotherapyFormFields: React.FC<ImmunotherapyFormFieldsProps> = (
   );
 
   const handleResponseChange = React.useCallback(
-    (e: any) => onChange('response', e.target.value),
+    (e: { target: { value: unknown } }) => onChange('response', e.target.value),
     [onChange]
   );
 

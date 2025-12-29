@@ -1,11 +1,11 @@
 import React from 'react';
+import { InputAdornment } from '@mui/material';
 import {
   Container,
   Typography,
   Button,
   Box,
   TextField,
-  InputAdornment,
   Table,
   TableBody,
   TableCell,
@@ -15,7 +15,7 @@ import {
   Paper,
   IconButton,
   Tooltip,
-} from '@mui/material';
+} from '../components/mui';
 import {
   Person as PersonIcon,
   Email as EmailIcon,
@@ -25,8 +25,8 @@ import {
   Search as SearchIcon,
   Visibility as VisibilityIcon,
 } from '@mui/icons-material';
-import { useActor } from '@xstate/react';
-import { patientMachine } from '../fsm/list.machine';
+import { useSelector } from '@xstate/react';
+import { usePatientsActor } from '../contexts/app.actor.context';
 import type { Patient, PatientData } from '../models/patient.model';
 import { createPatient } from '../models/patient.model';
 import { useNavigate } from 'react-router-dom';
@@ -68,11 +68,20 @@ const searchInputProps = {
 } as const;
 
 const PatientsListPage: React.FC = () => {
-  const [state, send] = useActor(patientMachine);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  
+  // Get patient actor from root machine
+  const patientActor = usePatientsActor();
+
+  // Optimize selectors - only subscribe to what we need
+  const patients = useSelector(patientActor, (state) => state.context.patients);
+  const error = useSelector(patientActor, (state) => state.context.error);
+  const searchQuery = useSelector(patientActor, (state) => state.context.searchQuery);
+  const addDialogOpen = useSelector(patientActor, (state) => state.context.addDialogOpen);
+  const isLoading = useSelector(patientActor, (state) => state.matches('loading'));
+  const isFailure = useSelector(patientActor, (state) => state.matches('failure'));
   const isMobile = useIsMobile();
-  const [addDialogOpen, setAddDialogOpen] = React.useState(false);
 
   const handlePatientClick = React.useCallback(
     (patientId: string) => {
@@ -103,40 +112,39 @@ const PatientsListPage: React.FC = () => {
   );
 
   const handleOpenAddDialog = React.useCallback(() => {
-    setAddDialogOpen(true);
+    patientActor.send({ type: 'OPEN_ADD_DIALOG' });
   }, []);
 
   const handleCloseAddDialog = React.useCallback(() => {
-    setAddDialogOpen(false);
+    patientActor.send({ type: 'CLOSE_ADD_DIALOG' });
   }, []);
 
   const handleAddPatient = React.useCallback(
     (data: PatientData) => {
       const patient = createPatient(data);
-      send({ type: 'ADD_PATIENT', patient });
-      handleCloseAddDialog();
+      patientActor.send({ type: 'ADD_PATIENT', patient });
     },
-    [send, handleCloseAddDialog]
+    []
   );
 
   const handleSearch = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const query = event.target.value;
-      send({ type: 'SEARCH_PATIENTS', query });
+      patientActor.send({ type: 'SEARCH_PATIENTS', query });
     },
-    [send]
+    []
   );
 
   const handleRetry = React.useCallback(() => {
-    send({ type: 'RETRY' });
-  }, [send]);
+    patientActor.send({ type: 'RETRY' });
+  }, []);
 
   const formatDate = React.useCallback((date: Date | string) => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString();
   }, []);
 
-  if (state.matches('loading')) {
+  if (isLoading) {
     return (
       <Container maxWidth="lg" sx={containerSx}>
         <Typography variant="h4" component="h1" gutterBottom>
@@ -146,14 +154,14 @@ const PatientsListPage: React.FC = () => {
     );
   }
 
-  if (state.matches('failure')) {
+  if (isFailure) {
     return (
       <Container maxWidth="lg" sx={containerSx}>
         <Typography variant="h4" component="h1" gutterBottom color="error">
           {t('patients.error')}
         </Typography>
         <Typography variant="body1" gutterBottom>
-          {state.context.error}
+          {error}
         </Typography>
         <Button
           variant="contained"
@@ -185,7 +193,7 @@ const PatientsListPage: React.FC = () => {
         <TextField
           fullWidth
           placeholder={t('patients.searchPlaceholder')}
-          value={state.context.searchQuery}
+          value={searchQuery}
           onChange={handleSearch}
           InputProps={searchInputProps}
           sx={searchFieldSx}
@@ -194,7 +202,7 @@ const PatientsListPage: React.FC = () => {
 
       {isMobile ? (
         <PatientsCardList
-          patients={state.context.patients}
+          patients={patients}
           onPatientClick={handlePatientClick}
           formatDate={formatDate}
         />
@@ -211,7 +219,7 @@ const PatientsListPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {state.context.patients.map((patient: Patient) => (
+              {patients.map((patient: Patient) => (
                 <TableRow
                   key={patient.id}
                   hover
@@ -267,7 +275,7 @@ const PatientsListPage: React.FC = () => {
         </TableContainer>
       )}
 
-      {state.context.patients.length === 0 && !state.context.searchQuery && (
+      {patients.length === 0 && !searchQuery && (
         <Box sx={emptyStateBoxSx}>
           <Typography variant="h6" color="text.secondary">
             {t('patients.noPatients')}
@@ -283,7 +291,7 @@ const PatientsListPage: React.FC = () => {
         </Box>
       )}
 
-      {state.context.patients.length === 0 && state.context.searchQuery && (
+      {patients.length === 0 && searchQuery && (
         <Box sx={emptyStateBoxSx}>
           <Typography variant="h6" color="text.secondary">
             {t('patients.noSearchResults')}

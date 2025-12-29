@@ -3,20 +3,14 @@ import {
   Typography,
   Card,
   CardContent,
-  Button,
-  TextField,
   Box,
   MenuItem,
-  FormControl,
-  InputLabel,
-  Select,
-  Grid,
   FormControlLabel,
   Switch,
   Paper,
   Stack,
   Divider,
-} from '@mui/material';
+} from '../mui';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -25,6 +19,7 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { MedicalHistoryRecord, MedicalRecordCategory } from '../../models/medical.history.model';
 import { CategoryDefs } from '../../models/config';
+import { Button, TextField, FormControl, InputLabel, Select, Grid } from '../mui';
 
 const formBoxSx = { mt: 3 };
 const paperSx = { p: 3 };
@@ -46,14 +41,26 @@ const stackSpacing25 = 2.5;
 const stackSpacing2 = 2;
 const gridSpacing = 3;
 
-const categoryEntries = Object.entries(CategoryDefs);
+const categoryEntries = Object.keys(CategoryDefs).map(key => [
+  key as MedicalRecordCategory,
+  CategoryDefs[key as MedicalRecordCategory]
+] as const);
+
+export interface MedicalRecordFormData {
+  date: Date;
+  startDate?: Date;
+  endDate?: Date;
+  notes?: string;
+  isContinuous: boolean;
+  [key: string]: unknown;
+}
 
 export interface BaseMedicalRecordFormProps {
   mode: 'add' | 'edit';
   patientId: string;
   patientName: string;
   record?: MedicalHistoryRecord;
-  onSubmit: (data: any, keepDialogOpen?: boolean) => void;
+  onSubmit: (data: MedicalRecordFormData, keepDialogOpen?: boolean) => void;
   onCancel: () => void;
   compact?: boolean;
   saveAndAddNext?: boolean;
@@ -127,6 +134,11 @@ export const BaseMedicalRecordForm: React.FC<BaseMedicalRecordFormProps> = ({
 
   const handleSubmit = React.useCallback((e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Blur active element to prevent aria-hidden warning when dialog closes
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     
     // Prepare form data
     const formData = {

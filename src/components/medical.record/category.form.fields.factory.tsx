@@ -41,10 +41,8 @@ export type CategoryFields =
 
 interface CategoryFormFieldsProps {
   category: MedicalRecordCategory;
-  // Note: Using Record<string, any> because category can change dynamically
-  // Each specific form field component will enforce proper types based on category
-  value: Record<string, any>;
-  onChange: (field: string, value: any) => void;
+  value: Record<string, unknown>;
+  onChange: (field: string, value: unknown) => void;
 }
 
 export const CategoryFormFieldsFactory: React.FC<CategoryFormFieldsProps> = ({

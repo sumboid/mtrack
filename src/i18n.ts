@@ -32,7 +32,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    debug: import.meta.env.DEV,
+    debug: Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV),
     
     interpolation: {
       escapeValue: false,

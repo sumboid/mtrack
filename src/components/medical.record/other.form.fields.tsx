@@ -1,11 +1,11 @@
 import React from 'react';
-import { TextField, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { OtherFields } from '../../models/medical.history.model';
+import { Grid, TextField } from '../mui';
 
 export interface OtherFormFieldsProps {
   value: OtherFields;
-  onChange: (field: string, value: any) => void;
+  onChange: (field: string, value: unknown) => void;
 }
 
 const fullWidthGridSize = { xs: 12 };
