@@ -51,11 +51,11 @@ export const ImmunotherapyFormFields: React.FC<ImmunotherapyFormFieldsProps> = (
             label={t('addRecord.response')}
             onChange={handleResponseChange}
           >
-            <MenuItem value="complete">{t('addRecord.responseComplete')}</MenuItem>
-            <MenuItem value="partial">{t('addRecord.responsePartial')}</MenuItem>
-            <MenuItem value="stable">{t('addRecord.responseStable')}</MenuItem>
-            <MenuItem value="progressive">{t('addRecord.responseProgressive')}</MenuItem>
-            <MenuItem value="unknown">{t('addRecord.responseUnknown')}</MenuItem>
+            <MenuItem value="complete-response">{t('addRecord.completeResponse')}</MenuItem>
+            <MenuItem value="partial-response">{t('addRecord.partialResponse')}</MenuItem>
+            <MenuItem value="stable-disease">{t('addRecord.stableDisease')}</MenuItem>
+            <MenuItem value="progressive-disease">{t('addRecord.progressiveDisease')}</MenuItem>
+            <MenuItem value="not-assessed">{t('addRecord.notAssessed')}</MenuItem>
           </Select>
         </FormControl>
       </Grid>

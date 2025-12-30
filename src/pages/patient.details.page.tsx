@@ -32,6 +32,7 @@ import { CategoryDefs } from '../models/config';
 import { AddMedicalRecordDialog, EditMedicalRecordDialog } from '../components/medical.record.dialog.component';
 import { DiagnosisDisplayFactory } from '../components/diagnoses/diagnosis.factory.component';
 import { MedicalRecordListItem } from '../components/medical.record.list.item.component';
+import { MedicalTimeline } from '../components/medical.timeline.component';
 
 // SX Props
 const containerSx = { mt: 4, mb: 4 };
@@ -381,6 +382,14 @@ const PatientDetailsPage: React.FC = () => {
       >
         {t('patientDetails.backToPatients')}
       </Button>
+
+      {/* Medical Timeline */}
+      {records.length > 0 && (
+        <MedicalTimeline 
+          records={records} 
+          getCategoryName={getCategoryName}
+        />
+      )}
 
       <Grid container spacing={gridSpacing}>
         {/* Patient Info Card */}

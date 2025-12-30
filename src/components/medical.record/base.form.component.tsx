@@ -72,6 +72,7 @@ export interface BaseMedicalRecordFormProps {
 export const BaseMedicalRecordForm: React.FC<BaseMedicalRecordFormProps> = ({
   mode,
   patientName,
+  record,
   onSubmit,
   onCancel,
   compact = false,
@@ -82,14 +83,22 @@ export const BaseMedicalRecordForm: React.FC<BaseMedicalRecordFormProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [date, setDate] = React.useState<Dayjs | null>(() => dayjs());
+  const [date, setDate] = React.useState<Dayjs | null>(() => 
+    record && CategoryDefs[category].type !== 'continuous' ? dayjs(record.date) : dayjs()
+  );
   const [isContinuous, setIsContinuous] = React.useState(() => 
     CategoryDefs[category].type === 'continuous'
   );
-  const [startDate, setStartDate] = React.useState<Dayjs | null>(() => dayjs());
-  const [endDate, setEndDate] = React.useState<Dayjs | null>(() => null);
-  const [isOngoing, setIsOngoing] = React.useState(() => true);
-  const [notes, setNotes] = React.useState('');
+  const [startDate, setStartDate] = React.useState<Dayjs | null>(() => 
+    record?.startDate ? dayjs(record.startDate) : dayjs()
+  );
+  const [endDate, setEndDate] = React.useState<Dayjs | null>(() => 
+    record?.endDate ? dayjs(record.endDate) : null
+  );
+  const [isOngoing, setIsOngoing] = React.useState(() => 
+    record ? !record.endDate : true
+  );
+  const [notes, setNotes] = React.useState(() => record?.notes ?? '');
 
   const titleText = React.useMemo(() => 
     mode === 'add' ? t('addRecord.title') : t('editRecord.title'),

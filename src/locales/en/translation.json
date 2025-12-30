@@ -43,6 +43,7 @@
     "lastVisit": "Last visit",
     "editPatient": "Edit Patient",
     "medicalHistory": "Medical History",
+    "timeline": "Medical Timeline",
     "addRecord": "Add Record",
     "noMedicalRecords": "No medical records found",
     "addFirstRecord": "Add First Record",

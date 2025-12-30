@@ -18,6 +18,7 @@ import { useMachine } from '@xstate/react';
 import { backupMachine } from '../fsm/backup.machine';
 import LanguageSelector from './language.selector.component';
 import { BackupDialog } from './backup.dialog.component';
+import { APP_VERSION } from '../constants/version';
 
 interface NavigationProps {
   mode: 'light' | 'dark';
@@ -55,10 +56,20 @@ const Navigation: React.FC<NavigationProps> = React.memo(({ mode, toggleTheme })
             sx={{ 
               fontWeight: 700,
               color: 'text.primary',
-              display: { xs: 'none', sm: 'block' }, // Hide on mobile
+              display: { xs: 'none', sm: 'block' },
             }}
           >
             {t('navigation.title')}
+          </Typography>
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              ml: 2,
+              color: 'text.secondary',
+              display: { xs: 'none', md: 'block' },
+            }}
+          >
+            v{APP_VERSION}
           </Typography>
         </Box>
 
