@@ -64,9 +64,8 @@ const Navigation: React.FC<NavigationProps> = React.memo(({ mode, toggleTheme })
           <Typography 
             variant="caption" 
             sx={{ 
-              ml: 2,
+              ml: { xs: 0, sm: 2 },
               color: 'text.secondary',
-              display: { xs: 'none', md: 'block' },
             }}
           >
             v{APP_VERSION}
