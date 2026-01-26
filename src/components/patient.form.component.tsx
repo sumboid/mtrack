@@ -129,6 +129,13 @@ export const PatientForm: React.FC<PatientFormProps> = React.memo(({
   const wasSubmittedRef = React.useRef(false);
 
   React.useEffect(() => {
+    // Reset ref when form is reinitialized (output is cleared)
+    if (!state.context.output) {
+      wasSubmittedRef.current = false;
+    }
+  }, [state.context.output]);
+
+  React.useEffect(() => {
     // Check for output in idle state (submitted state transitions too fast to catch)
     if (state.matches('idle') && state.context.output && !wasSubmittedRef.current) {
       wasSubmittedRef.current = true;

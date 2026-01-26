@@ -173,8 +173,13 @@ export const createPatientFormMachine = () => {
                 if ('type' in ctx && ctx.type === 'breast-cancer') {
                   diagnosisType = 'breast-cancer';
                 }
-                if ('details' in ctx && ctx.details && typeof ctx.details === 'object') {
-                  diagnosisDetails = ctx.details as BreastCancer['details'];
+                
+                // Get details from breastCancerFormRef instead of diagnosisConfigRef.details
+                if ('breastCancerFormRef' in ctx && isValidRef(ctx.breastCancerFormRef)) {
+                  const breastCancerSnapshot = ctx.breastCancerFormRef.getSnapshot();
+                  if (breastCancerSnapshot && typeof breastCancerSnapshot === 'object' && 'context' in breastCancerSnapshot) {
+                    diagnosisDetails = (breastCancerSnapshot as Record<string, unknown>).context as BreastCancer['details'];
+                  }
                 }
               }
             }
